@@ -12,16 +12,19 @@ public enum CombatCommand
 
 public class CombatManager : MonoBehaviour {
 
-    [SerializeField] Text turnCountText;
-    [SerializeField] Text playerCommandText;
+    PlayerScript playerObjectScript;
+    EnemyScript enemyObjectScript;
+    CombatUIManager myCombatUIManager;
 
-    int turnCount = 1;
+    CombatCommand playerCommand;
+    CombatCommand enemyCommand;
 
 	// Use this for initialization
 	void Start ()
     {
-        turnCountText.text = "TURN " + turnCount;
-        playerCommandText.text = "Battle commence!";
+        playerObjectScript = FindObjectOfType<PlayerScript>();
+        enemyObjectScript = FindObjectOfType<EnemyScript>();
+        myCombatUIManager = FindObjectOfType<CombatUIManager>();
 	}
 	
 	// Update is called once per frame
@@ -29,27 +32,90 @@ public class CombatManager : MonoBehaviour {
 		
 	}
 
-    public void OnClickExecuteCommand(int commandInt)
+    public void ProgressCurrentTurn()
     {
-        // Cast Int to Enum
-        CombatCommand chosenCommand = (CombatCommand)commandInt;
-        switch (chosenCommand)
+        myCombatUIManager.ManageCommandButton(false);
+        enemyObjectScript.PickingEnemyCommand();
+        StartCoroutine(ProcessOutcomeDelay());
+    }
+
+    IEnumerator ProcessOutcomeDelay()
+    {
+        yield return new WaitForSeconds(1.0f);
+        enemyCommand = enemyObjectScript.GetChosenEnemyCommand();
+        playerCommand = playerObjectScript.GetPlayerChosenCommand();
+        ProcessCombatOutcome();
+        myCombatUIManager.EndOfTurnProcess();
+    }
+
+    // Processing Combat
+    // TODO check damage sequence, there will be no scenario where both player and enemy die together!
+    void ProcessCombatOutcome()
+    {
+        int playerStrength = playerObjectScript.GetPlayerStrength();
+        int enemyStrength = enemyObjectScript.GetEnemyStrength();
+
+        switch (playerCommand)
         {
             case CombatCommand.attack:
-                playerCommandText.text = "Player attacks!";
+                if (enemyCommand == CombatCommand.attack)
+                {
+                    enemyObjectScript.EnemyResolveDamage(playerStrength);
+                    playerObjectScript.PlayerResolveDamage(enemyStrength);
+                }
+                else if (enemyCommand == CombatCommand.powerAttack)
+                {
+                    enemyObjectScript.EnemyResolveDamage(playerStrength);
+                    playerObjectScript.PlayerResolveDamage(enemyStrength * 2);
+                }
+                else if (enemyCommand == CombatCommand.guard)
+                {
+                    enemyObjectScript.EnemyResolveDamage(playerStrength);
+                }
                 break;
+
             case CombatCommand.powerAttack:
-                playerCommandText.text = "Player use power attack!";
+                if (enemyCommand == CombatCommand.attack)
+                {
+                    enemyObjectScript.EnemyResolveDamage(playerStrength * 2);
+                    playerObjectScript.PlayerResolveDamage(enemyStrength);
+                }
+                else if (enemyCommand == CombatCommand.powerAttack)
+                {
+                    enemyObjectScript.EnemyResolveDamage(playerStrength * 2);
+                    playerObjectScript.PlayerResolveDamage(enemyStrength * 2);
+                }
+                else if (enemyCommand == CombatCommand.guard)
+                {
+                    // Enemy evaded player's P.Attack
+                }
                 break;
+
             case CombatCommand.guard:
-                playerCommandText.text = "Player guards!";
+                if (enemyCommand == CombatCommand.attack)
+                {
+                    playerObjectScript.PlayerResolveDamage(enemyStrength);
+                }
+                else if (enemyCommand == CombatCommand.powerAttack)
+                {
+                    // Player evaded enemy's P.Attack
+                }
+                else if (enemyCommand == CombatCommand.guard)
+                {
+                    // Both guarding
+                }
                 break;
+
             default:
-                Debug.Log("Invalid input");
+                Debug.LogError("Error processing combat outcome.");
                 break;
         }
 
-        turnCount++;
-        turnCountText.text = "TURN " + turnCount;
+        myCombatUIManager.ThisTurnCombatOutcome(playerCommand, enemyCommand);
+    }
+
+    public void EndOfCombat(GameObject defeatedCharacter)
+    {
+        myCombatUIManager.EndOfCombatResult(defeatedCharacter);
     }
 }
