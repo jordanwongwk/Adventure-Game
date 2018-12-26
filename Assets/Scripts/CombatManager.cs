@@ -36,21 +36,19 @@ public class CombatManager : MonoBehaviour {
     {
         myCombatUIManager.ManageCommandButton(false);
         enemyObjectScript.PickingEnemyCommand();
-        StartCoroutine(ProcessOutcomeDelay());
+        DeterminingCommandThisTurn();
     }
 
-    IEnumerator ProcessOutcomeDelay()
+    void DeterminingCommandThisTurn()
     {
-        yield return new WaitForSeconds(1.0f);
         enemyCommand = enemyObjectScript.GetChosenEnemyCommand();
         playerCommand = playerObjectScript.GetPlayerChosenCommand();
-        ProcessCombatOutcome();
-        myCombatUIManager.EndOfTurnProcess();
+        myCombatUIManager.ThisTurnCombatOutcome(playerCommand, enemyCommand);       // End of turn process is done after coroutine here       
     }
 
     // Processing Combat
     // TODO check damage sequence, there will be no scenario where both player and enemy die together!
-    void ProcessCombatOutcome()
+    public void ProcessCombatOutcome()
     {
         int playerStrength = playerObjectScript.GetPlayerStrength();
         int enemyStrength = enemyObjectScript.GetEnemyStrength();
@@ -110,8 +108,6 @@ public class CombatManager : MonoBehaviour {
                 Debug.LogError("Error processing combat outcome.");
                 break;
         }
-
-        myCombatUIManager.ThisTurnCombatOutcome(playerCommand, enemyCommand);
     }
 
     public void EndOfCombat(GameObject defeatedCharacter)

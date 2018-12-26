@@ -11,8 +11,10 @@ public class PlayerScript : MonoBehaviour
 
     [Header("Player UI")]
     [SerializeField] Text playerHealthText;
+    [SerializeField] Image playerHealthForeground;
 
     int thisTurnDamage = 0;
+    int currentHealth;
 
     CombatCommand chosenCommand;
     CombatManager myCombatManager;
@@ -21,7 +23,9 @@ public class PlayerScript : MonoBehaviour
     void Start()
     {
         myCombatManager = FindObjectOfType<CombatManager>();
-        playerHealthText.text = healthPoints.ToString();
+
+        currentHealth = healthPoints;
+        UpdateHealth();
     }
 
     // Update is called once per frame
@@ -40,15 +44,23 @@ public class PlayerScript : MonoBehaviour
     {
         // Manage defense here
         thisTurnDamage = damage - 2;
-        healthPoints -= thisTurnDamage;
-        playerHealthText.text = healthPoints.ToString();
+        currentHealth -= thisTurnDamage;
 
-        if (healthPoints <= 0)
+        if (currentHealth <= 0)
         {
+            currentHealth = 0;
             myCombatManager.EndOfCombat(gameObject);
         }
+
+        UpdateHealth();
     }
 
+    void UpdateHealth()
+    {
+        playerHealthText.text = currentHealth.ToString();
+        float currentFill = (float)currentHealth / healthPoints;        // Cast it to float 
+        playerHealthForeground.fillAmount = currentFill;
+    }
 
     // Getter and Setter
     public CombatCommand GetPlayerChosenCommand()

@@ -28,6 +28,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1074542332012594
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 224234466543053920}
+  - component: {fileID: 114726377648826846}
+  m_Layer: 5
+  m_Name: CombatUIManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1236498399984658
 GameObject:
   m_ObjectHideFlags: 1
@@ -74,7 +90,7 @@ GameObject:
   - component: {fileID: 222029463541008662}
   - component: {fileID: 114912134951397404}
   m_Layer: 5
-  m_Name: BattleOutcome
+  m_Name: CombatOutcome
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -686,6 +702,27 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114726377648826846
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1074542332012594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac3e09391c05f074996b7fa2a239da2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  turnCountText: {fileID: 114931114399384374}
+  playerCommandText: {fileID: 114588935114352934}
+  enemyCommandText: {fileID: 114407225415211402}
+  turnOutcome: {fileID: 114510875303074488}
+  endofCombatPanel: {fileID: 1760676932654986}
+  combatOutcome: {fileID: 114912134951397404}
+  commandButtons:
+  - {fileID: 114549807607615792}
+  - {fileID: 114124686416118910}
+  - {fileID: 114408685058053984}
 --- !u!114 &114806631365725640
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -903,7 +940,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!224 &224019643572341404
 RectTransform:
@@ -980,6 +1017,24 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -387}
   m_SizeDelta: {x: 301.3, y: 56.5}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!224 &224234466543053920
+RectTransform:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1074542332012594}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 224425268979749886}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224305065090050196
 RectTransform:
   m_ObjectHideFlags: 1
@@ -1017,6 +1072,7 @@ RectTransform:
   - {fileID: 224019643572341404}
   - {fileID: 224097279953042080}
   - {fileID: 224305065090050196}
+  - {fileID: 224234466543053920}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

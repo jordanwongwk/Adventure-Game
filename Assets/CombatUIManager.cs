@@ -19,6 +19,7 @@ public class CombatUIManager : MonoBehaviour {
 
     PlayerScript playerObjectScript;
     EnemyScript enemyObjectScript;
+    CombatManager myCombatManager;
 
     int turnCount = 0;
 
@@ -26,6 +27,7 @@ public class CombatUIManager : MonoBehaviour {
     void Start () {
         playerObjectScript = FindObjectOfType<PlayerScript>();
         enemyObjectScript = FindObjectOfType<EnemyScript>();
+        myCombatManager = FindObjectOfType<CombatManager>();
 
         EndOfTurnProcess();
         playerCommandText.text = "Battle commence!";
@@ -45,72 +47,73 @@ public class CombatUIManager : MonoBehaviour {
         ManageCommandButton(true);
         turnCount++;
         turnCountText.text = "TURN " + turnCount;
+
+        // TODO clear result text
     }
 
     // Managing Texts
     public void ThisTurnCombatOutcome(CombatCommand playerCommand, CombatCommand enemyCommand)
     {
+        playerCommandText.text = "Player uses " + playerCommand.ToString();
+        enemyCommandText.text = "Enemy uses " + enemyCommand.ToString();
+        StartCoroutine(BattleOutcomeResult(playerCommand, enemyCommand));
+    }
+
+    IEnumerator BattleOutcomeResult(CombatCommand playerCommand, CombatCommand enemyCommand)
+    {
+        // TODO put indication here to signal player to press once to continue
+
+        yield return WaitForKeyPress();
+
+        //Animation here?
+        myCombatManager.ProcessCombatOutcome();
+
         int playerDamageSufferedThisTurn = playerObjectScript.GetThisTurnPlayerDamage();
         int enemyDamageSufferedThisTurn = enemyObjectScript.GetThisTurnEnemyDamage();
 
         switch (playerCommand)
         {
             case CombatCommand.attack:
-                playerCommandText.text = "Player attacks!";
-
                 if (enemyCommand == CombatCommand.attack)
                 {
-                    enemyCommandText.text = "The enemy attacks!";
                     turnOutcome.text = "Player deals " + enemyDamageSufferedThisTurn + " to enemy!\nEnemy deals " + playerDamageSufferedThisTurn + " to player!";
                 }
                 else if (enemyCommand == CombatCommand.powerAttack)
                 {
-                    enemyCommandText.text = "The enemy uses power attack!";
                     turnOutcome.text = "Player deals " + enemyDamageSufferedThisTurn + " to enemy!\nEnemy deals " + playerDamageSufferedThisTurn + " to player!";
                 }
                 else if (enemyCommand == CombatCommand.guard)
                 {
-                    enemyCommandText.text = "The enemy guards!";
                     turnOutcome.text = "Enemy guards!\nPlayer penetrates, dealing " + enemyDamageSufferedThisTurn + " to enemy!";
                 }
                 break;
 
             case CombatCommand.powerAttack:
-                playerCommandText.text = "Player uses power attack!";
-
                 if (enemyCommand == CombatCommand.attack)
                 {
-                    enemyCommandText.text = "The enemy attacks!";
                     turnOutcome.text = "Player deals " + enemyDamageSufferedThisTurn + " to enemy!\nEnemy deals " + playerDamageSufferedThisTurn + " to player!";
                 }
                 else if (enemyCommand == CombatCommand.powerAttack)
                 {
-                    enemyCommandText.text = "The enemy uses power attack!";
                     turnOutcome.text = "Player deals " + enemyDamageSufferedThisTurn + " to enemy!\nEnemy deals " + playerDamageSufferedThisTurn + " to player!";
                 }
                 else if (enemyCommand == CombatCommand.guard)
                 {
-                    enemyCommandText.text = "The enemy guards!";
                     turnOutcome.text = "Enemy guards!\nPlayer's power attack has been evaded!";
                 }
                 break;
 
             case CombatCommand.guard:
-                playerCommandText.text = "Player guards!";
-
                 if (enemyCommand == CombatCommand.attack)
                 {
-                    enemyCommandText.text = "The enemy attacks!";
                     turnOutcome.text = "Player guards!\nEnemy penetrates, dealing " + playerDamageSufferedThisTurn + " to player!";
                 }
                 else if (enemyCommand == CombatCommand.powerAttack)
                 {
-                    enemyCommandText.text = "The enemy uses power attack!";
                     turnOutcome.text = "Player guards!\nEnemy's power attack has been evaded!";
                 }
                 else if (enemyCommand == CombatCommand.guard)
                 {
-                    enemyCommandText.text = "The enemy guards!";
                     turnOutcome.text = "Player guards!\nEnemy guards!";
                 }
                 break;
@@ -119,6 +122,7 @@ public class CombatUIManager : MonoBehaviour {
                 Debug.LogError("Error processing combat outcome.");
                 break;
         }
+        EndOfTurnProcess();
     }
 
     public void EndOfCombatResult(GameObject defeatedCharacter)
@@ -133,6 +137,21 @@ public class CombatUIManager : MonoBehaviour {
         else
         {
             combatOutcome.text = "Enemy has been defeated!\nYou win!";
+        }
+    }
+
+
+
+    IEnumerator WaitForKeyPress()
+    {
+        bool isPressed = false;
+        while (!isPressed)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                isPressed = true;
+            }
+            yield return null;
         }
     }
 }
