@@ -7,7 +7,9 @@ public class CombatUIManager : MonoBehaviour {
     [Header("Combat UI")]
     [SerializeField] Text turnCountText;
     [SerializeField] Text playerCommandText;
+    [SerializeField] Animator playerCommandTextBoxAnimator;
     [SerializeField] Text enemyCommandText;
+    [SerializeField] Animator enemyCommandTextBoxAnimator;
     [SerializeField] Text turnOutcome;
 
     [Header("End of Combat UI")]
@@ -20,11 +22,13 @@ public class CombatUIManager : MonoBehaviour {
     PlayerScript playerObjectScript;
     EnemyScript enemyObjectScript;
     CombatManager myCombatManager;
+    
 
     int turnCount = 0;
 
     // Use this for initialization
-    void Start () {
+    void Start ()
+    {
         playerObjectScript = FindObjectOfType<PlayerScript>();
         enemyObjectScript = FindObjectOfType<EnemyScript>();
         myCombatManager = FindObjectOfType<CombatManager>();
@@ -32,6 +36,11 @@ public class CombatUIManager : MonoBehaviour {
         EndOfTurnProcess();
         playerCommandText.text = "Battle commence!";
         enemyCommandText.text = "Battle commence!";
+    }
+
+    void Update()
+    {
+
     }
 
     public void ManageCommandButton(bool isButtonReady)
@@ -62,10 +71,17 @@ public class CombatUIManager : MonoBehaviour {
     IEnumerator BattleOutcomeResult(CombatCommand playerCommand, CombatCommand enemyCommand)
     {
         // TODO put indication here to signal player to press once to continue
+        playerCommandTextBoxAnimator.SetBool("AppearUIWindow", true);
+        enemyCommandTextBoxAnimator.SetBool("AppearUIWindow", true);
 
         yield return WaitForKeyPress();
 
         //Animation here?
+        playerCommandTextBoxAnimator.SetBool("AppearUIWindow", false);
+        enemyCommandTextBoxAnimator.SetBool("AppearUIWindow", false);
+
+        yield return new WaitForSeconds(0.5f);      // Delay for window to disappear OR animation to finish
+
         myCombatManager.ProcessCombatOutcome();
 
         int playerDamageSufferedThisTurn = playerObjectScript.GetThisTurnPlayerDamage();

@@ -14,24 +14,52 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] Image playerHealthForeground;
 
     int thisTurnDamage = 0;
-    int currentHealth;
+    int initialHealth;
+    int finalHealth;
+
+    bool reducingHealth = false;
 
     CombatCommand chosenCommand;
     CombatManager myCombatManager;
+
+    const float LERPING_SPEED = 2.0f;
 
     // Use this for initialization
     void Start()
     {
         myCombatManager = FindObjectOfType<CombatManager>();
 
-        currentHealth = healthPoints;
-        UpdateHealth();
+        InitializingHealthAndHealthUI();
+    }
+
+    private void InitializingHealthAndHealthUI()
+    {
+        initialHealth = healthPoints;
+        finalHealth = initialHealth;
+
+        playerHealthText.text = initialHealth.ToString();
+        float currentFill = (float)initialHealth / healthPoints;        // Cast it to float 
+        playerHealthForeground.fillAmount = currentFill;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (reducingHealth)
+        {
+            if (initialHealth == finalHealth) { reducingHealth = false; }
+            initialHealth = (int)Mathf.Lerp(initialHealth, finalHealth, Time.deltaTime / LERPING_SPEED);
+            playerHealthText.text = initialHealth.ToString();
 
+            float currentFill = (float)initialHealth / healthPoints;        // Cast it to float 
+            playerHealthForeground.fillAmount = currentFill;
+
+            if (initialHealth <= 0)
+            {
+                initialHealth = 0;
+                myCombatManager.EndOfCombat(gameObject);
+            }
+        }
     }
 
     public void OnClickExecuteCommand(int commandInt)
@@ -44,22 +72,8 @@ public class PlayerScript : MonoBehaviour
     {
         // Manage defense here
         thisTurnDamage = damage - 2;
-        currentHealth -= thisTurnDamage;
-
-        if (currentHealth <= 0)
-        {
-            currentHealth = 0;
-            myCombatManager.EndOfCombat(gameObject);
-        }
-
-        UpdateHealth();
-    }
-
-    void UpdateHealth()
-    {
-        playerHealthText.text = currentHealth.ToString();
-        float currentFill = (float)currentHealth / healthPoints;        // Cast it to float 
-        playerHealthForeground.fillAmount = currentFill;
+        finalHealth -= thisTurnDamage;
+        reducingHealth = true;
     }
 
     // Getter and Setter

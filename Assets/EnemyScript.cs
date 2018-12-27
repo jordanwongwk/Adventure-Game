@@ -14,23 +14,52 @@ public class EnemyScript : MonoBehaviour
     [SerializeField] Image enemyHealthForeground;
 
     int thisTurnDamage = 0;
-    int currentHealth;
+    int initialHealth;
+    int finalHealth;
+
+    bool reducingHealth = false;
 
     CombatCommand chosenEnemyCommand;
     CombatManager myCombatManager;
 
-	// Use this for initialization
-	void Start () {
+    const float LERPING_SPEED = 2.0f;
+
+    // Use this for initialization
+    void Start () {
         myCombatManager = FindObjectOfType<CombatManager>();
 
-        currentHealth = healthPoints;
-        UpdateHealth();
+        InitializingHealthAndHealthUI();
     }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
+    private void InitializingHealthAndHealthUI()
+    {
+        initialHealth = healthPoints;
+        finalHealth = initialHealth;
+
+        enemyHealthText.text = initialHealth.ToString();
+        float currentFill = (float)initialHealth / healthPoints;        // Cast it to float 
+        enemyHealthForeground.fillAmount = currentFill;
+    }
+
+    // Update is called once per frame
+    void Update ()
+    {
+        if (reducingHealth)
+        {
+            if (initialHealth == finalHealth) { reducingHealth = false; }
+            initialHealth = (int)Mathf.Lerp(initialHealth, finalHealth, Time.deltaTime / LERPING_SPEED);
+            enemyHealthText.text = initialHealth.ToString();
+
+            float currentFill = (float)initialHealth / healthPoints;        // Cast it to float 
+            enemyHealthForeground.fillAmount = currentFill;
+
+            if (initialHealth <= 0)
+            {
+                initialHealth = 0;
+                myCombatManager.EndOfCombat(gameObject);
+            }
+        }
+    }
 
     public void PickingEnemyCommand()
     {
@@ -54,24 +83,9 @@ public class EnemyScript : MonoBehaviour
     {
         // Manage defense here
         thisTurnDamage = damage - 2;
-        currentHealth -= thisTurnDamage;
-
-        if (currentHealth <= 0)
-        {
-            currentHealth = 0;
-            myCombatManager.EndOfCombat(gameObject);
-        }
-
-        UpdateHealth();
+        finalHealth -= thisTurnDamage;
+        reducingHealth = true;
     }
-
-    void UpdateHealth()
-    {
-        enemyHealthText.text = currentHealth.ToString();
-        float currentFill = (float)currentHealth / healthPoints;        // Cast it to float 
-        enemyHealthForeground.fillAmount = currentFill;
-    }
-
 
     // Getter and Setter
     public CombatCommand GetChosenEnemyCommand()
