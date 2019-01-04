@@ -5,13 +5,18 @@ using UnityEngine.UI;
 
 public class EnemyScript : MonoBehaviour
 {
-    [Header("Enemy Stat")]
-    [SerializeField] int healthPoints = 50;
-    [SerializeField] int strength = 2;
+    [Header("Enemy Info")]
+    [SerializeField] EnemyInfo enemyEncountered;
 
     [Header("Enemy UI")]
     [SerializeField] Text enemyHealthText;
+    [SerializeField] Text enemyNameUI;
     [SerializeField] Image enemyHealthForeground;
+
+    // Enemy Info
+    int healthPoints;
+    int strength;
+    int speed;
 
     int thisTurnDamage = 0;
     int initialHealth;
@@ -20,15 +25,33 @@ public class EnemyScript : MonoBehaviour
     bool reducingHealth = false;
 
     CombatCommand chosenEnemyCommand;
+    Animator myAnimatorController;
     CombatManager myCombatManager;
+    EnemySkillScript mySkillScript;
 
     const float LERPING_SPEED = 2.0f;
 
     // Use this for initialization
-    void Start () {
+    void Start ()
+    {
+        myAnimatorController = GetComponent<Animator>();
         myCombatManager = FindObjectOfType<CombatManager>();
-
+        mySkillScript = GetComponent<EnemySkillScript>();
+        SettingUpEnemy();
         InitializingHealthAndHealthUI();
+    }
+
+    private void SettingUpEnemy()
+    {
+        GetComponent<SpriteRenderer>().sprite = enemyEncountered.GetEnemySprite();
+
+        myAnimatorController.runtimeAnimatorController = enemyEncountered.GetEnemyAnimatorController();
+
+        enemyNameUI.text = "Lv " + enemyEncountered.GetEnemyLevel() + " " + enemyEncountered.GetEnemyName();
+
+        healthPoints = enemyEncountered.GetEnemyHealthPoints();
+        strength = enemyEncountered.GetEnemyStrength();
+        speed = enemyEncountered.GetEnemySpeed();
     }
 
     private void InitializingHealthAndHealthUI()
@@ -77,14 +100,32 @@ public class EnemyScript : MonoBehaviour
         {
             chosenEnemyCommand = CombatCommand.guard;
         }
+
+        mySkillScript.AttemptToActivateSkill();
     }
 
-    public void EnemyResolveDamage(int damage)
+    public void EnemyTakingDamage(int damage)
     {
         // Manage defense here
         thisTurnDamage = damage - 2;
         finalHealth -= thisTurnDamage;
         reducingHealth = true;
+    }
+
+    // Public Functions
+    public void EnemyAttemptToUseSkill(ActivationTime currentTime)
+    {
+        mySkillScript.AttemptToUseSkill(currentTime);
+    }
+
+    public void EnemyAttackAnimation()
+    {
+        myAnimatorController.SetTrigger("EnemyAttack");
+    }
+
+    public void EnemyGuardPowerAttackAnimation()
+    {
+        myAnimatorController.SetTrigger("EnemyGuard");
     }
 
     // Getter and Setter
@@ -93,9 +134,24 @@ public class EnemyScript : MonoBehaviour
         return chosenEnemyCommand;
     }
 
+    public EnemyInfo GetThisEnemyInfo()
+    {
+        return enemyEncountered;
+    }
+
+    public string GetEnemyName()
+    {
+        return enemyEncountered.GetEnemyName();
+    }
+
     public int GetEnemyStrength()
     {
         return strength;
+    }
+
+    public int GetEnemySpeed()
+    {
+        return speed;
     }
 
     public int GetThisTurnEnemyDamage()

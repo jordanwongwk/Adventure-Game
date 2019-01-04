@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9912005048be31d4cb8f7fa7ef0bae76, type: 3}
+  m_Name: WildFrog
+  m_EditorClassIdentifier: 
+  enemyName: Wild Frog
+  enemySprite: {fileID: 21300000, guid: 23225c14044888d418862eb04ab0f27c, type: 3}
+  enemyAnimatorController: {fileID: 9100000, guid: df0b692b84aab8942b187af3bcd338c8,
+    type: 2}
+  level: 6
+  healthPoints: 50
+  strength: 3
+  speed: 3
+  thisEnemySpecialSkill: []

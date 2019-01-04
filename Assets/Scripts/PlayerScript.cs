@@ -8,6 +8,7 @@ public class PlayerScript : MonoBehaviour
     [Header("Player Stat")]
     [SerializeField] int healthPoints = 100;
     [SerializeField] int strength = 2;
+    [SerializeField] int speed = 10;
 
     [Header("Player UI")]
     [SerializeField] Text playerHealthText;
@@ -20,14 +21,18 @@ public class PlayerScript : MonoBehaviour
     bool reducingHealth = false;
 
     CombatCommand chosenCommand;
+    Animator myAnimatorController;
     CombatManager myCombatManager;
+    PlayerSkillScript mySkillScript;
 
     const float LERPING_SPEED = 2.0f;
 
     // Use this for initialization
     void Start()
     {
+        myAnimatorController = GetComponent<Animator>();
         myCombatManager = FindObjectOfType<CombatManager>();
+        mySkillScript = GetComponent<PlayerSkillScript>();
 
         InitializingHealthAndHealthUI();
     }
@@ -65,15 +70,32 @@ public class PlayerScript : MonoBehaviour
     public void OnClickExecuteCommand(int commandInt)
     {
         chosenCommand = (CombatCommand)commandInt;      // Cast Int to Enum
-        myCombatManager.ProgressCurrentTurn();
+        mySkillScript.AttemptToActivateSkill();
+        myCombatManager.StartThisTurnProgression();
     }
 
-    public void PlayerResolveDamage(int damage)
+    public void PlayerTakingDamage(int damage)
     {
         // Manage defense here
         thisTurnDamage = damage - 2;
         finalHealth -= thisTurnDamage;
         reducingHealth = true;
+    }
+
+    // Public Command
+    public void PlayerAttemptToUseSkill(ActivationTime currentTime)
+    {
+        mySkillScript.AttemptToUseSkill(currentTime);
+    }
+
+    public void PlayerAttackAnimation()
+    {
+        myAnimatorController.SetTrigger("PlayerAttack");
+    }
+
+    public void PlayerGuardPowerAttackAnimation()
+    {
+        myAnimatorController.SetTrigger("PlayerGuard");
     }
 
     // Getter and Setter
@@ -85,6 +107,11 @@ public class PlayerScript : MonoBehaviour
     public int GetPlayerStrength()
     {
         return strength;
+    }
+
+    public int GetPlayerSpeed()
+    {
+        return speed;
     }
 
     public int GetThisTurnPlayerDamage()

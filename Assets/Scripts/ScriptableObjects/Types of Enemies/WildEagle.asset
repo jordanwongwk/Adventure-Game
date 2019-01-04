@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9912005048be31d4cb8f7fa7ef0bae76, type: 3}
+  m_Name: WildEagle
+  m_EditorClassIdentifier: 
+  enemyName: Wild Eagle
+  enemySprite: {fileID: 21300000, guid: 74b5eb63fb14a884a9cd33189a96e6ba, type: 3}
+  enemyAnimatorController: {fileID: 9100000, guid: a2396d0e7d4cd594b9b2382a0ef969f2,
+    type: 2}
+  level: 5
+  healthPoints: 30
+  strength: 5
+  speed: 7
+  thisEnemySpecialSkills:
+  - {fileID: 11400000, guid: 51272d8a3ef3f4f43a5b548bfb910172, type: 2}
+  - {fileID: 11400000, guid: 7ec419a8359c0c44bb58a5e4a90f1d86, type: 2}
