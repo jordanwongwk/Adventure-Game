@@ -11,7 +11,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 817629c67ad6da34388de0e26c82b4ea, type: 3}
   m_Name: Counter
   m_EditorClassIdentifier: 
-  skillName: Counter
+  skillName: Counter Before
   damageDealt: 0
   damageMitigation: 0
   target: {fileID: 0}

@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Name: Eagle_DiveAttack
   m_EditorClassIdentifier: 
   skillName: Dive Attack
-  damageDealt: 0
+  damageMultiplier: 0
   damageMitigation: 0
   target: {fileID: 0}
-  skillActivationTime: 0
+  skillActivationTime: 1
+  thisSkillEffectScript: {fileID: 0}
   minActivateRNG: 0
-  maxActivateRNG: 50
+  maxActivateRNG: 100

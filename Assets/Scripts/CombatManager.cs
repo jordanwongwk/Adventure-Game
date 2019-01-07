@@ -52,8 +52,11 @@ public class CombatManager : MonoBehaviour {
     // Processing During Combat Outcome (turnUnit = unit that has a higher speed are selected first)
     public void ProcessingDuringCombatPhase(GameObject turnUnit)
     {
-        int playerStrength = playerObjectScript.GetPlayerStrength();
-        int enemyStrength = enemyObjectScript.GetEnemyStrength();
+        Character playerChar = playerObjectScript.GetPlayerCharacter();
+        Character enemyChar = enemyObjectScript.GetEnemyCharacter();
+
+        int playerStrength = playerChar.GetThisCharStrength();
+        int enemyStrength = enemyChar.GetThisCharStrength();
         bool isPlayerTurn = false;
 
         // if its player's turn
@@ -61,10 +64,10 @@ public class CombatManager : MonoBehaviour {
         {
             isPlayerTurn = true;
             playerObjectScript.PlayerAttemptToUseSkill(ActivationTime.duringCombat);
-            enemyObjectScript.EnemyAttemptToUseSkill(ActivationTime.duringCombat);
         }
         else
         {
+            enemyObjectScript.EnemyAttemptToUseSkill(ActivationTime.duringCombat);
             // enemy attempt skill
             Debug.Log("Enemy SKILL TIME");
         }
@@ -74,17 +77,17 @@ public class CombatManager : MonoBehaviour {
             case CombatCommand.attack:
                 if (isPlayerTurn)
                 {
-                    StartCoroutine(PlayerAttackingEnemy(turnUnit, playerStrength));
+                    StartCoroutine(BattleOutcome(playerChar, playerCommand, enemyChar, enemyCommand, playerStrength));
                 }
                 else
                 {
                     if (enemyCommand == CombatCommand.attack)
                     {
-                        StartCoroutine(EnemyAttackingPlayer(turnUnit, enemyStrength));
+                        StartCoroutine(BattleOutcome(enemyChar, enemyCommand, playerChar, playerCommand, enemyStrength));
                     }
                     else if (enemyCommand == CombatCommand.powerAttack)
                     {
-                        StartCoroutine(EnemyAttackingPlayer(turnUnit, enemyStrength * 2));
+                        StartCoroutine(BattleOutcome(enemyChar, enemyCommand, playerChar, playerCommand, enemyStrength * 2));
                     }
                     else if (enemyCommand == CombatCommand.guard)
                     {
@@ -98,22 +101,22 @@ public class CombatManager : MonoBehaviour {
                 {
                     if (isPlayerTurn)
                     {
-                        StartCoroutine(PlayerAttackingEnemy(turnUnit, playerStrength * 2));
+                        StartCoroutine(BattleOutcome(playerChar, playerCommand, enemyChar, enemyCommand, playerStrength * 2));
                     }
                     else
                     {
-                        StartCoroutine(EnemyAttackingPlayer(turnUnit, enemyStrength));
+                        StartCoroutine(BattleOutcome(enemyChar, enemyCommand, playerChar, playerCommand, enemyStrength));
                     }
                 }
                 else if (enemyCommand == CombatCommand.powerAttack)
                 {
                     if (isPlayerTurn)
                     {
-                        StartCoroutine(PlayerAttackingEnemy(turnUnit, playerStrength * 2));
+                        StartCoroutine(BattleOutcome(playerChar, playerCommand, enemyChar, enemyCommand, playerStrength * 2));
                     }
                     else
                     {
-                        StartCoroutine(EnemyAttackingPlayer(turnUnit, enemyStrength * 2));
+                        StartCoroutine(BattleOutcome(enemyChar, enemyCommand, playerChar, playerCommand, enemyStrength * 2));
                     }
                 }
                 else if (enemyCommand == CombatCommand.guard)
@@ -121,8 +124,8 @@ public class CombatManager : MonoBehaviour {
                     // Enemy evaded player's P.Attack
                     if (isPlayerTurn)
                     {
-                        playerObjectScript.PlayerAttackAnimation();
-                        enemyObjectScript.EnemyGuardPowerAttackAnimation();
+                        playerChar.AttackAnimation();
+                        enemyChar.GuardPowerAttackAnimation();
                         myCombatUIManager.DisplayDuringCombatText(turnUnit, playerCommand, enemyCommand);
                     }
                     else
@@ -141,13 +144,13 @@ public class CombatManager : MonoBehaviour {
                 {
                     if (enemyCommand == CombatCommand.attack)
                     {
-                        StartCoroutine(EnemyAttackingPlayer(turnUnit, enemyStrength));
+                        StartCoroutine(BattleOutcome(enemyChar, enemyCommand, playerChar, playerCommand, enemyStrength));
                     }
                     else if (enemyCommand == CombatCommand.powerAttack)
                     {
                         // Player evaded enemy's P.Attack
-                        enemyObjectScript.EnemyAttackAnimation();
-                        playerObjectScript.PlayerGuardPowerAttackAnimation();
+                        enemyChar.AttackAnimation();
+                        playerChar.GuardPowerAttackAnimation();
                         myCombatUIManager.DisplayDuringCombatText(turnUnit, enemyCommand, playerCommand);
                     }
                     else if (enemyCommand == CombatCommand.guard)
@@ -165,20 +168,12 @@ public class CombatManager : MonoBehaviour {
         }
     }
 
-    IEnumerator PlayerAttackingEnemy(GameObject turnUnit, int playerStrength)
+    IEnumerator BattleOutcome(Character attackingChar, CombatCommand attackingCommand, Character targetChar, CombatCommand targetCommand, int damage)
     {
-        playerObjectScript.PlayerAttackAnimation();
+        attackingChar.AttackAnimation();
         yield return new WaitForSeconds(0.3f);      //TODO find length
-        enemyObjectScript.EnemyTakingDamage(playerStrength);
-        myCombatUIManager.DisplayDuringCombatText(turnUnit, playerCommand, enemyCommand);
-    }
-
-    IEnumerator EnemyAttackingPlayer(GameObject turnUnit, int enemyStrength)
-    {
-        enemyObjectScript.EnemyAttackAnimation();
-        yield return new WaitForSeconds(0.3f);      //TODO find length
-        playerObjectScript.PlayerTakingDamage(enemyStrength);
-        myCombatUIManager.DisplayDuringCombatText(turnUnit, enemyCommand, playerCommand);
+        targetChar.ThisCharacterTakingDamage(damage);
+        myCombatUIManager.DisplayDuringCombatText(attackingChar.gameObject, attackingCommand, targetCommand);
     }
 
 

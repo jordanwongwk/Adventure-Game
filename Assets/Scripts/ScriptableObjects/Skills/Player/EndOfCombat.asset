@@ -9,12 +9,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 817629c67ad6da34388de0e26c82b4ea, type: 3}
-  m_Name: Repel
+  m_Name: EndOfCombat
   m_EditorClassIdentifier: 
-  skillName: Repel During
+  skillName: Owarida
   damageDealt: 0
   damageMitigation: 0
   target: {fileID: 0}
-  skillActivationTime: 1
-  minActivateRNG: 40
-  maxActivateRNG: 70
+  skillActivationTime: 2
+  minActivateRNG: 1
+  maxActivateRNG: 100

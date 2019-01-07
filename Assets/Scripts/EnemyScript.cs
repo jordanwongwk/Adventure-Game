@@ -8,82 +8,19 @@ public class EnemyScript : MonoBehaviour
     [Header("Enemy Info")]
     [SerializeField] EnemyInfo enemyEncountered;
 
-    [Header("Enemy UI")]
-    [SerializeField] Text enemyHealthText;
-    [SerializeField] Text enemyNameUI;
-    [SerializeField] Image enemyHealthForeground;
-
-    // Enemy Info
-    int healthPoints;
-    int strength;
-    int speed;
-
-    int thisTurnDamage = 0;
-    int initialHealth;
-    int finalHealth;
-
-    bool reducingHealth = false;
-
     CombatCommand chosenEnemyCommand;
-    Animator myAnimatorController;
-    CombatManager myCombatManager;
-    EnemySkillScript mySkillScript;
+    Character myCharacter;
+    SkillScript mySkillScript;
 
-    const float LERPING_SPEED = 2.0f;
-
-    // Use this for initialization
-    void Start ()
+    // Use Awake as CombatManagers need to take in character in Start
+    void Awake ()
     {
-        myAnimatorController = GetComponent<Animator>();
-        myCombatManager = FindObjectOfType<CombatManager>();
-        mySkillScript = GetComponent<EnemySkillScript>();
-        SettingUpEnemy();
-        InitializingHealthAndHealthUI();
-    }
+        myCharacter = GetComponent<Character>();
+        mySkillScript = GetComponent<SkillScript>();
 
-    private void SettingUpEnemy()
-    {
         GetComponent<SpriteRenderer>().sprite = enemyEncountered.GetEnemySprite();
-
-        myAnimatorController.runtimeAnimatorController = enemyEncountered.GetEnemyAnimatorController();
-
-        enemyNameUI.text = "Lv " + enemyEncountered.GetEnemyLevel() + " " + enemyEncountered.GetEnemyName();
-
-        healthPoints = enemyEncountered.GetEnemyHealthPoints();
-        strength = enemyEncountered.GetEnemyStrength();
-        speed = enemyEncountered.GetEnemySpeed();
     }
-
-    private void InitializingHealthAndHealthUI()
-    {
-        initialHealth = healthPoints;
-        finalHealth = initialHealth;
-
-        enemyHealthText.text = initialHealth.ToString();
-        float currentFill = (float)initialHealth / healthPoints;        // Cast it to float 
-        enemyHealthForeground.fillAmount = currentFill;
-    }
-
-    // Update is called once per frame
-    void Update ()
-    {
-        if (reducingHealth)
-        {
-            if (initialHealth == finalHealth) { reducingHealth = false; }
-            initialHealth = (int)Mathf.Lerp(initialHealth, finalHealth, Time.deltaTime / LERPING_SPEED);
-            enemyHealthText.text = initialHealth.ToString();
-
-            float currentFill = (float)initialHealth / healthPoints;        // Cast it to float 
-            enemyHealthForeground.fillAmount = currentFill;
-
-            if (initialHealth <= 0)
-            {
-                initialHealth = 0;
-                myCombatManager.EndOfCombat(gameObject);
-            }
-        }
-    }
-
+    
     public void PickingEnemyCommand()
     {
         int generateNumber = Random.Range(1, 300);
@@ -104,13 +41,6 @@ public class EnemyScript : MonoBehaviour
         mySkillScript.AttemptToActivateSkill();
     }
 
-    public void EnemyTakingDamage(int damage)
-    {
-        // Manage defense here
-        thisTurnDamage = damage - 2;
-        finalHealth -= thisTurnDamage;
-        reducingHealth = true;
-    }
 
     // Public Functions
     public void EnemyAttemptToUseSkill(ActivationTime currentTime)
@@ -118,15 +48,6 @@ public class EnemyScript : MonoBehaviour
         mySkillScript.AttemptToUseSkill(currentTime);
     }
 
-    public void EnemyAttackAnimation()
-    {
-        myAnimatorController.SetTrigger("EnemyAttack");
-    }
-
-    public void EnemyGuardPowerAttackAnimation()
-    {
-        myAnimatorController.SetTrigger("EnemyGuard");
-    }
 
     // Getter and Setter
     public CombatCommand GetChosenEnemyCommand()
@@ -144,18 +65,8 @@ public class EnemyScript : MonoBehaviour
         return enemyEncountered.GetEnemyName();
     }
 
-    public int GetEnemyStrength()
+    public Character GetEnemyCharacter()
     {
-        return strength;
-    }
-
-    public int GetEnemySpeed()
-    {
-        return speed;
-    }
-
-    public int GetThisTurnEnemyDamage()
-    {
-        return thisTurnDamage;
+        return myCharacter;
     }
 }

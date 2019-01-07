@@ -71,6 +71,8 @@ GameObject:
   - component: {fileID: 4170297930668222}
   - component: {fileID: 212092086075035286}
   - component: {fileID: 95538702298183970}
+  - component: {fileID: 114916170101519554}
+  - component: {fileID: 114992009197707912}
   - component: {fileID: 114768671177997780}
   m_Layer: 0
   m_Name: Enemy
@@ -277,9 +279,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyEncountered: {fileID: 11400000, guid: bf72ad1ac87b336488f6477199d0b032, type: 2}
-  enemyHealthText: {fileID: 114375856581344244}
-  enemyNameUI: {fileID: 114465240695029312}
-  enemyHealthForeground: {fileID: 114967941388402980}
+--- !u!114 &114916170101519554
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1405825755813774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1773c9c7483ef244ba3af1792ef5f86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthPoints: 100
+  strength: 2
+  speed: 10
+  healthText: {fileID: 114375856581344244}
+  nameText: {fileID: 114465240695029312}
+  healthForeground: {fileID: 114967941388402980}
 --- !u!114 &114940240903825096
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -334,6 +350,18 @@ MonoBehaviour:
   m_FillAmount: 0.743
   m_FillClockwise: 1
   m_FillOrigin: 1
+--- !u!114 &114992009197707912
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1405825755813774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90da6b2e229bf694cada3a4f68e1e089, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  thisCharacterSkills: []
 --- !u!212 &212092086075035286
 SpriteRenderer:
   m_ObjectHideFlags: 1

@@ -4,26 +4,46 @@ using UnityEngine;
 
 public enum ActivationTime { beforeCombat, duringCombat, afterCombat }
 
-public class PlayerSkillScript : MonoBehaviour {
+public class SkillScript : MonoBehaviour {
 
-    [SerializeField] List<SkillEffect> thisCharacterSkills = new List<SkillEffect>();
+    [SerializeField] List<SkillInfo> thisCharacterSkills = new List<SkillInfo>();
 
     List<bool> skillActivationThisRound = new List<bool>();
 
     CombatUIManager myCombatUIManager;
 
-	// Use this for initialization
-	void Start ()
+    // Use this for initialization
+    void Start ()
     {
         myCombatUIManager = FindObjectOfType<CombatUIManager>();
 
+        // If its player
+        if (GetComponent<EnemyScript>() != null)
+        {
+            SetupEnemySkills();
+        }
+
+        SetupSkillActivationBooleanList();
+    }
+
+    private void SetupSkillActivationBooleanList()
+    {
         // Initialize the skill activation boolean List
-        foreach (SkillEffect skill in thisCharacterSkills)
+        foreach (SkillInfo skill in thisCharacterSkills)
         {
             skillActivationThisRound.Add(false);
-        }	
-	}
+        }
+    }
 
+    private void SetupEnemySkills()
+    {
+        EnemyInfo thisEnemyInfo = GetComponent<EnemyScript>().GetThisEnemyInfo();
+
+        for (int i = 0; i < thisEnemyInfo.GetNumberOfEnemySpecialSkill(); i++)
+        {
+            thisCharacterSkills.Add(thisEnemyInfo.GetEnemySpecialSkill(i));
+        }
+    }
 
     public void AttemptToActivateSkill()
     {
@@ -47,9 +67,9 @@ public class PlayerSkillScript : MonoBehaviour {
             case ActivationTime.beforeCombat:
                 for (int i = 0; i < skillActivationThisRound.Count; i++)
                 {
-                    if(skillActivationThisRound[i] == false) { continue; }
+                    if (skillActivationThisRound[i] == false) { continue; }
 
-                    if(thisCharacterSkills[i].GetSkillActivationTime() != currentTime) { continue; }
+                    if (thisCharacterSkills[i].GetSkillActivationTime() != currentTime) { continue; }
 
                     Debug.Log("Skill activated in " + currentTime.ToString());
                     myCombatUIManager.UsingSkillDisplayUI(this.gameObject, thisCharacterSkills[i].GetSkillName());
@@ -71,7 +91,7 @@ public class PlayerSkillScript : MonoBehaviour {
                     // TODO activate skill here?
                     skillActivationThisRound[i] = false;
                 }
-                
+
                 break;
 
             case ActivationTime.afterCombat:

@@ -29,8 +29,8 @@ public class CombatUIManager : MonoBehaviour {
     [SerializeField] Text currentPhaseText;
     [SerializeField] Text currentPhaseSubText;
 
-    PlayerScript playerObjectScript;
-    EnemyScript enemyObjectScript;
+    Character playerChar;
+    Character enemyChar;
     CombatManager myCombatManager;
 
     int turnCount = 0;
@@ -39,8 +39,8 @@ public class CombatUIManager : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
-        playerObjectScript = FindObjectOfType<PlayerScript>();
-        enemyObjectScript = FindObjectOfType<EnemyScript>();
+        playerChar = FindObjectOfType<PlayerScript>().GetPlayerCharacter();
+        enemyChar = FindObjectOfType<EnemyScript>().GetEnemyCharacter();
         myCombatManager = FindObjectOfType<CombatManager>();
 
         StartCoroutine(StartCombatCoroutine());
@@ -50,7 +50,7 @@ public class CombatUIManager : MonoBehaviour {
     {
         processingTurnPanel.SetActive(true);
         currentPhaseText.text = "Starting Battle...";
-        currentPhaseSubText.text = "Encountered " + enemyObjectScript.GetEnemyName() + "!\nTap screen to begin";
+        currentPhaseSubText.text = "Encountered " + enemyChar.GetComponent<EnemyScript>().GetEnemyName() + "!\nTap screen to begin";
 
         yield return WaitForKeyPress();
 
@@ -86,8 +86,7 @@ public class CombatUIManager : MonoBehaviour {
         yield return WaitForKeyPress();
 
         // PHASE TWO: DURING COMBAT
-        // TODO Temporary
-        TurnOffSkillUI();
+
 
         playerCommandTextBoxAnimator.SetBool("AppearUIWindow", false);
         enemyCommandTextBoxAnimator.SetBool("AppearUIWindow", false);
@@ -95,32 +94,36 @@ public class CombatUIManager : MonoBehaviour {
         yield return new WaitForSeconds(0.5f);      // Delay for window to disappear OR animation to finish
 
         // PHASE 2-1: FASTEST unit actions.
-        int playerSpeed = playerObjectScript.GetPlayerSpeed();
-        int enemySpeed = enemyObjectScript.GetEnemySpeed();
+        int playerSpeed = playerChar.GetThisCharSpeed();
+        int enemySpeed = enemyChar.GetThisCharSpeed();
 
         // Consider refactoring the following and add animation, if want
         if (playerSpeed >= enemySpeed)
         {
-            myCombatManager.ProcessingDuringCombatPhase(playerObjectScript.gameObject);
+            myCombatManager.ProcessingDuringCombatPhase(playerChar.gameObject);
             currentPhaseText.text = "Player's Turn";
+
+            // if (skill == true)
+               //yield return WaitForKeyPress();
+               //Debug.Log("Allololol");
         }
         else
         {
-            myCombatManager.ProcessingDuringCombatPhase(enemyObjectScript.gameObject);
+            myCombatManager.ProcessingDuringCombatPhase(enemyChar.gameObject);
             currentPhaseText.text = "Enemy's Turn";
         }
 
         yield return WaitForKeyPress();
-
+        Debug.Log("Next");
         // PHASE 2-2: SLOWEST unit actions.
         if (playerSpeed < enemySpeed)
         {
-            myCombatManager.ProcessingDuringCombatPhase(playerObjectScript.gameObject);
+            myCombatManager.ProcessingDuringCombatPhase(playerChar.gameObject);
             currentPhaseText.text = "Player's Turn";
         }
         else
         {
-            myCombatManager.ProcessingDuringCombatPhase(enemyObjectScript.gameObject);
+            myCombatManager.ProcessingDuringCombatPhase(enemyChar.gameObject);
             currentPhaseText.text = "Enemy's Turn";
         }
 
@@ -165,13 +168,13 @@ public class CombatUIManager : MonoBehaviour {
         {
             thisUnitTurnName = "Player";
             targetName = "Enemy";
-            targetSufferedDamage = enemyObjectScript.GetThisTurnEnemyDamage();
+            targetSufferedDamage = enemyChar.GetThisTurnCharDamage();
         }
         else if (unitTurn.tag == "Enemy")
         {
             thisUnitTurnName = "Enemy";
             targetName = "Player";
-            targetSufferedDamage = playerObjectScript.GetThisTurnPlayerDamage();
+            targetSufferedDamage = playerChar.GetThisTurnCharDamage();
         }
 
         switch (turnUnitCommand)
@@ -232,7 +235,7 @@ public class CombatUIManager : MonoBehaviour {
         endofCombatPanel.SetActive(true);
 
         // TODO Please address the issue of draw. Player should win the moment the last attack lands!
-        if (defeatedCharacter == playerObjectScript.gameObject)
+        if (defeatedCharacter == playerChar.gameObject)
         {
             combatOutcome.text = "Player has been defeated!\nYou lost!";
         }
@@ -251,6 +254,9 @@ public class CombatUIManager : MonoBehaviour {
             if (Input.GetMouseButtonDown(0) && !combatEnded)
             {
                 isPressed = true;
+
+                // Turn off Skill UI upon key press
+                TurnOffSkillUI();
             }
             yield return null;
         }

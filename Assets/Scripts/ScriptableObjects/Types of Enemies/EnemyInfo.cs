@@ -16,7 +16,7 @@ public class EnemyInfo : ScriptableObject {
     [SerializeField] int healthPoints;
     [SerializeField] int strength;
     [SerializeField] int speed;
-    [SerializeField] List<SkillEffect> thisEnemySpecialSkills;
+    [SerializeField] List<SkillInfo> thisEnemySpecialSkills;
 
     // Getter for Base Infos
     public string GetEnemyName()
@@ -61,7 +61,7 @@ public class EnemyInfo : ScriptableObject {
         return thisEnemySpecialSkills.Count;
     }
 
-    public SkillEffect GetEnemySpecialSkill(int count)
+    public SkillInfo GetEnemySpecialSkill(int count)
     {
         return thisEnemySpecialSkills[count];
     }
