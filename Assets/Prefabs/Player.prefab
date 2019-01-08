@@ -252,9 +252,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   thisCharacterSkills:
-  - {fileID: 11400000, guid: 6b1e7477ce2388548b14feb23664cf5b, type: 2}
-  - {fileID: 11400000, guid: b0700f7019e958947a27e0cb94767b31, type: 2}
-  - {fileID: 11400000, guid: c7028e36a4f2c5747a4de2e18daa9d12, type: 2}
+  - {fileID: 11400000, guid: 4e24942ac08539547a75dfdca6491934, type: 2}
+  - {fileID: 11400000, guid: 30971b8a4d21f234eabe3663064cf35c, type: 2}
+  - {fileID: 11400000, guid: f0bf134cb7a8bff44bb65397be84900c, type: 2}
 --- !u!114 &114775669089454400
 MonoBehaviour:
   m_ObjectHideFlags: 1

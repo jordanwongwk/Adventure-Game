@@ -37,15 +37,13 @@ public class EnemyScript : MonoBehaviour
         {
             chosenEnemyCommand = CombatCommand.guard;
         }
-
-        mySkillScript.AttemptToActivateSkill();
     }
 
 
     // Public Functions
     public void EnemyAttemptToUseSkill(ActivationTime currentTime)
     {
-        mySkillScript.AttemptToUseSkill(currentTime);
+        mySkillScript.AttemptToUseSkill(currentTime, chosenEnemyCommand);
     }
 
 

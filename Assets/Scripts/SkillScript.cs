@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum ActivationTime { beforeCombat, duringCombat, afterCombat }
+public enum ActivationTime { beforeCombat, duringCombatOffense, duringCombatDefense, afterCombat }
 
 public class SkillScript : MonoBehaviour {
 
     [SerializeField] List<SkillInfo> thisCharacterSkills = new List<SkillInfo>();
 
-    List<bool> skillActivationThisRound = new List<bool>();
+    //List<bool> skillActivationThisRound = new List<bool>();
 
     CombatUIManager myCombatUIManager;
 
@@ -23,15 +23,10 @@ public class SkillScript : MonoBehaviour {
             SetupEnemySkills();
         }
 
-        SetupSkillActivationBooleanList();
-    }
-
-    private void SetupSkillActivationBooleanList()
-    {
-        // Initialize the skill activation boolean List
+        // Setting every skill to designated types
         foreach (SkillInfo skill in thisCharacterSkills)
         {
-            skillActivationThisRound.Add(false);
+            skill.SettingSkillType();
         }
     }
 
@@ -45,68 +40,77 @@ public class SkillScript : MonoBehaviour {
         }
     }
 
-    public void AttemptToActivateSkill()
+    public void AttemptToUseSkill(ActivationTime currentTime, CombatCommand unitCommand)
     {
         float randomValue = Random.Range(0f, 100f);
-        Debug.Log("This round RNG " + randomValue);
 
-        for (int i = 0; i < thisCharacterSkills.Count; i++)
-        {
-            // If the RNG value is between the min and max of the skill's RNG, check the boolean
-            if (thisCharacterSkills[i].GetMinActivationRNG() < randomValue && thisCharacterSkills[i].GetMaxActivationRNG() >= randomValue)
-            {
-                skillActivationThisRound[i] = true;
-            }
-        }
-    }
-
-    public void AttemptToUseSkill(ActivationTime currentTime)
-    {
         switch (currentTime)
         {
             case ActivationTime.beforeCombat:
-                for (int i = 0; i < skillActivationThisRound.Count; i++)
+                for (int i = 0; i < thisCharacterSkills.Count; i++)
                 {
-                    if (skillActivationThisRound[i] == false) { continue; }
+                    if (thisCharacterSkills[i].GetMinActivationRNG() < randomValue && thisCharacterSkills[i].GetMaxActivationRNG() >= randomValue)
+                    {
+                        if (thisCharacterSkills[i].GetSkillActivationTime() != currentTime) { continue; }
 
-                    if (thisCharacterSkills[i].GetSkillActivationTime() != currentTime) { continue; }
+                        Debug.Log("Skill activated in " + currentTime.ToString());
+                        myCombatUIManager.UsingSkillDisplayUI(this.gameObject, thisCharacterSkills[i].GetSkillName());
 
-                    Debug.Log("Skill activated in " + currentTime.ToString());
-                    myCombatUIManager.UsingSkillDisplayUI(this.gameObject, thisCharacterSkills[i].GetSkillName());
-                    // TODO activate skill here?
-                    skillActivationThisRound[i] = false;
+                        
+                        //float damage = (thisCharacterSkills[i] as BuffingSkills).GetStrengthBuffMultiplier();
+                        // TODO activate skill here?
+                        break;
+                    }
                 }
-
                 break;
 
-            case ActivationTime.duringCombat:
-                for (int i = 0; i < skillActivationThisRound.Count; i++)
+            case ActivationTime.duringCombatOffense:
+                for (int i = 0; i < thisCharacterSkills.Count; i++)
                 {
-                    if (skillActivationThisRound[i] == false) { continue; }
+                    if (thisCharacterSkills[i].GetMinActivationRNG() < randomValue && thisCharacterSkills[i].GetMaxActivationRNG() >= randomValue)
+                    {
+                        if (thisCharacterSkills[i].GetSkillActivationTime() != currentTime) { continue; }
+                        if (thisCharacterSkills[i].GetCommandThatTriggersSkill() != unitCommand) { continue; }
 
-                    if (thisCharacterSkills[i].GetSkillActivationTime() != currentTime) { continue; }
-
-                    Debug.Log("Skill activated in " + currentTime.ToString());
-                    myCombatUIManager.UsingSkillDisplayUI(this.gameObject, thisCharacterSkills[i].GetSkillName());
-                    // TODO activate skill here?
-                    skillActivationThisRound[i] = false;
+                        Debug.Log("Skill activated in " + currentTime.ToString());
+                        myCombatUIManager.UsingSkillDisplayUI(this.gameObject, thisCharacterSkills[i].GetSkillName());
+                        // TODO activate skill here?
+                        break;
+                    }
                 }
+                break;
 
+            // Dealing with all the counters and retaliates
+            case ActivationTime.duringCombatDefense:
+                for (int i = 0; i < thisCharacterSkills.Count; i++)
+                {
+                    if (thisCharacterSkills[i].GetMinActivationRNG() < randomValue && thisCharacterSkills[i].GetMaxActivationRNG() >= randomValue)
+                    {
+                        if (thisCharacterSkills[i].GetSkillActivationTime() != currentTime) { continue; }
+                        // Like if enemy attack and you guard, still can counter. If enemy guard, you counter, thats a bit odd
+                        if (thisCharacterSkills[i].GetCommandThatTriggersSkill() != unitCommand) { continue; }
+
+                        Debug.Log("Skill activated in " + currentTime.ToString());
+                        myCombatUIManager.UsingSkillDisplayUI(this.gameObject, thisCharacterSkills[i].GetSkillName());
+                        // TODO activate skill here?
+                        break;
+                    }
+                }
                 break;
 
             case ActivationTime.afterCombat:
-                for (int i = 0; i < skillActivationThisRound.Count; i++)
+                for (int i = 0; i < thisCharacterSkills.Count; i++)
                 {
-                    if (skillActivationThisRound[i] == false) { continue; }
+                    if (thisCharacterSkills[i].GetMinActivationRNG() < randomValue && thisCharacterSkills[i].GetMaxActivationRNG() >= randomValue)
+                    {
+                        if (thisCharacterSkills[i].GetSkillActivationTime() != currentTime) { continue; }
 
-                    if (thisCharacterSkills[i].GetSkillActivationTime() != currentTime) { continue; }
-
-                    Debug.Log("Skill activated in " + currentTime.ToString());
-                    myCombatUIManager.UsingSkillDisplayUI(this.gameObject, thisCharacterSkills[i].GetSkillName());
-                    // TODO activate skill here?
-                    skillActivationThisRound[i] = false;
+                        Debug.Log("Skill activated in " + currentTime.ToString());
+                        myCombatUIManager.UsingSkillDisplayUI(this.gameObject, thisCharacterSkills[i].GetSkillName());
+                        // TODO activate skill here?
+                        break;
+                    }
                 }
-
                 break;
 
             default:

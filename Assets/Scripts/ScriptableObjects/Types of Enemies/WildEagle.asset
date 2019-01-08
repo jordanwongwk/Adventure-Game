@@ -20,5 +20,5 @@ MonoBehaviour:
   strength: 5
   speed: 7
   thisEnemySpecialSkills:
-  - {fileID: 11400000, guid: 51272d8a3ef3f4f43a5b548bfb910172, type: 2}
-  - {fileID: 11400000, guid: 7ec419a8359c0c44bb58a5e4a90f1d86, type: 2}
+  - {fileID: 11400000, guid: fd725b08688a33b47b15d121d89bdb0e, type: 2}
+  - {fileID: 11400000, guid: 6ec85c763f5cf72499d6e80520d0f209, type: 2}

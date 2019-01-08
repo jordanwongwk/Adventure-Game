@@ -21,14 +21,13 @@ public class PlayerScript : MonoBehaviour
     public void OnClickExecuteCommand(int commandInt)
     {
         chosenCommand = (CombatCommand)commandInt;      // Cast Int to Enum
-        mySkillScript.AttemptToActivateSkill();
         myCombatManager.StartThisTurnProgression();
     }
 
     // Public Command
     public void PlayerAttemptToUseSkill(ActivationTime currentTime)
     {
-        mySkillScript.AttemptToUseSkill(currentTime);
+        mySkillScript.AttemptToUseSkill(currentTime, chosenCommand);
     }
 
     // Getter and Setter

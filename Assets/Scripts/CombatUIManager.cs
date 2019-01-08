@@ -31,35 +31,36 @@ public class CombatUIManager : MonoBehaviour {
 
     Character playerChar;
     Character enemyChar;
-    CombatManager myCombatManager;
 
     int turnCount = 0;
-    bool combatEnded = false;
 
-    // Use this for initialization
+
+    // START : Start of Combat (Initialization & Beginning of Combat)
     void Start ()
     {
         playerChar = FindObjectOfType<PlayerScript>().GetPlayerCharacter();
         enemyChar = FindObjectOfType<EnemyScript>().GetEnemyCharacter();
-        myCombatManager = FindObjectOfType<CombatManager>();
-
-        StartCoroutine(StartCombatCoroutine());
     }
 
-    IEnumerator StartCombatCoroutine()
+    public void CombatIntroductionStart()
     {
         processingTurnPanel.SetActive(true);
         currentPhaseText.text = "Starting Battle...";
         currentPhaseSubText.text = "Encountered " + enemyChar.GetComponent<EnemyScript>().GetEnemyName() + "!\nTap screen to begin";
-
-        yield return WaitForKeyPress();
-
-        ProceedToNewTurn();
-        currentPhaseSubText.text = "Progressing current turn.\nTap screen to continue.";
     }
 
-    // Initiating combat (After pressing commands)
-    public void ThisTurnCombatOutcome(CombatCommand playerCommand, CombatCommand enemyCommand)
+    public void CombatIntroductionEnd()
+    {
+        NextCombatTurnUI();
+        currentPhaseSubText.text = "Progressing current turn.\nTap screen to continue.";
+    }
+    // END : Start of Combat
+
+
+
+    // START : Pre-Combat (Display of command result)
+    // Combat Command text change based on player and enemy commands
+    public void ThisTurnCombatCommandResult(CombatCommand playerCommand, CombatCommand enemyCommand)
     {
         string playerCommandString = playerCommand.ToString();
         string enemyCommandString = enemyCommand.ToString();
@@ -69,95 +70,28 @@ public class CombatUIManager : MonoBehaviour {
 
         playerCommandText.text = "Player uses " + playerCommandString + "!";
         enemyCommandText.text = "Enemy uses " + enemyCommandString + "!";
-        StartCoroutine(InitiatingThisTurn(playerCommand, enemyCommand));
     }
 
-    // Start the turn
-    IEnumerator InitiatingThisTurn(CombatCommand playerCommand, CombatCommand enemyCommand)
+    // Phase text change
+    public void PreCombatUIProcedure()
     {
-        // PHASE ONE: PRE-COMBAT
         currentPhaseText.text = "Pre-Combat Phase";
-        playerCommandTextBoxAnimator.SetBool("AppearUIWindow", true);
-        enemyCommandTextBoxAnimator.SetBool("AppearUIWindow", true);
+        CommandTextBoxDisplay(true);
         processingTurnPanel.SetActive(true);
-
-        // Pre-Combat here
-
-        yield return WaitForKeyPress();
-
-        // PHASE TWO: DURING COMBAT
-
-
-        playerCommandTextBoxAnimator.SetBool("AppearUIWindow", false);
-        enemyCommandTextBoxAnimator.SetBool("AppearUIWindow", false);
-
-        yield return new WaitForSeconds(0.5f);      // Delay for window to disappear OR animation to finish
-
-        // PHASE 2-1: FASTEST unit actions.
-        int playerSpeed = playerChar.GetThisCharSpeed();
-        int enemySpeed = enemyChar.GetThisCharSpeed();
-
-        // Consider refactoring the following and add animation, if want
-        if (playerSpeed >= enemySpeed)
-        {
-            myCombatManager.ProcessingDuringCombatPhase(playerChar.gameObject);
-            currentPhaseText.text = "Player's Turn";
-
-            // if (skill == true)
-               //yield return WaitForKeyPress();
-               //Debug.Log("Allololol");
-        }
-        else
-        {
-            myCombatManager.ProcessingDuringCombatPhase(enemyChar.gameObject);
-            currentPhaseText.text = "Enemy's Turn";
-        }
-
-        yield return WaitForKeyPress();
-        Debug.Log("Next");
-        // PHASE 2-2: SLOWEST unit actions.
-        if (playerSpeed < enemySpeed)
-        {
-            myCombatManager.ProcessingDuringCombatPhase(playerChar.gameObject);
-            currentPhaseText.text = "Player's Turn";
-        }
-        else
-        {
-            myCombatManager.ProcessingDuringCombatPhase(enemyChar.gameObject);
-            currentPhaseText.text = "Enemy's Turn";
-        }
-
-        
-
-        yield return WaitForKeyPress();
-
-        // PHASE 3: END OF TURN
-        InitiatingEndofTurnPhase();
-
-        yield return WaitForKeyPress();
-
-        // NEW TURN
-        ProceedToNewTurn();
     }
 
-    private void InitiatingEndofTurnPhase()
+    // Display of Combat Command
+    public void CommandTextBoxDisplay(bool status)
     {
-        currentPhaseText.text = "Ending Phase";
-        turnOutcome.text = "Current turn has ended.";
-
-        myCombatManager.EndOfTurnProcess();
-
-        //TODO maybe add a pause here to process end turn in general       
+        playerCommandTextBoxAnimator.SetBool("AppearUIWindow", status);
+        enemyCommandTextBoxAnimator.SetBool("AppearUIWindow", status);
     }
+    // END : Pre-Combat
 
-    private void ProceedToNewTurn()
-    {
-        processingTurnPanel.SetActive(false);
-        turnCount++;
-        turnCountText.text = "TURN " + turnCount;
-        turnOutcome.text = "Choose a command.";
-    }
 
+    // TODO consider changing tag -> checking playerChar and enemyChar GO
+    // START : During Combat 
+    // Displaying combat outcome based on turn
     public void DisplayDuringCombatText(GameObject unitTurn, CombatCommand turnUnitCommand, CombatCommand targetCommand)
     {
         int targetSufferedDamage = -1;
@@ -204,7 +138,30 @@ public class CombatUIManager : MonoBehaviour {
             }
 
     }
+    // END : During Combat
 
+
+
+    // START : End of current turn & preparing for next turn
+    public void EndOfCombatTurnUI()
+    {
+        currentPhaseText.text = "Ending Phase";
+        turnOutcome.text = "Current turn has ended.";
+    }
+
+    public void NextCombatTurnUI()
+    {
+        processingTurnPanel.SetActive(false);
+        turnCount++;
+        turnCountText.text = "TURN " + turnCount;
+        turnOutcome.text = "Choose a command.";
+    }
+    // END : End of current turn & preparing for next turn
+
+
+
+    // START : General - All Timing
+    // Display Skill display regardless timing
     public void UsingSkillDisplayUI(GameObject currentGO, string skillName)
     {
         if (currentGO.tag == "Player")
@@ -223,13 +180,16 @@ public class CombatUIManager : MonoBehaviour {
         }
     }
 
-    void TurnOffSkillUI()
+    public void TurnOffSkillUI()
     {
         playerSkillTextBoxAnimator.SetBool("SlideInWindow", false);
         enemySkillTextBoxAnimator.SetBool("SlideInWindow", false);
     }
+    // END : General - All Timing
 
 
+
+    // End of the whole combat
     public void EndOfCombatResult(GameObject defeatedCharacter)
     {
         endofCombatPanel.SetActive(true);
@@ -245,26 +205,9 @@ public class CombatUIManager : MonoBehaviour {
         }
     }
 
-
-    IEnumerator WaitForKeyPress()
-    {
-        bool isPressed = false;
-        while (!isPressed)
-        {
-            if (Input.GetMouseButtonDown(0) && !combatEnded)
-            {
-                isPressed = true;
-
-                // Turn off Skill UI upon key press
-                TurnOffSkillUI();
-            }
-            yield return null;
-        }
-    }
-
     // Setter
-    public void SetCombatHasEnded(bool status)
+    public void SetCurrentPhaseText(string currentText)
     {
-        combatEnded = status;
+        currentPhaseText.text = currentText;
     }
 }

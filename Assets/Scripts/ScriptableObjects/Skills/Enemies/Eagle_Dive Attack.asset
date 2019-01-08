@@ -8,14 +8,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 817629c67ad6da34388de0e26c82b4ea, type: 3}
-  m_Name: Eagle_DiveAttack
+  m_Script: {fileID: 11500000, guid: d4368e9276e3e2044aebfbdeb646a25e, type: 3}
+  m_Name: Eagle_Dive Attack
   m_EditorClassIdentifier: 
   skillName: Dive Attack
-  damageMultiplier: 0
-  damageMitigation: 0
-  target: {fileID: 0}
+  target: {fileID: 1708285566634882, guid: df73e8d538b28ea4d85d1ffa730657b9, type: 2}
   skillActivationTime: 1
-  thisSkillEffectScript: {fileID: 0}
+  commandThatTriggers: 2
   minActivateRNG: 0
   maxActivateRNG: 100
+  damageMultiplier: 1.5
+  damageToCaster: 0

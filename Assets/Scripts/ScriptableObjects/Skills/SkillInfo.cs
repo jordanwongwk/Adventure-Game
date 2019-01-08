@@ -2,21 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "ScriptableObjects/Skill")]
-public class SkillInfo : ScriptableObject {
+public enum SkillType { healthPointRelated, buffing }
 
-    [Header("Skill Parameters")]
+public abstract class SkillInfo : ScriptableObject {
+
+    [Header("Skill Information")]
     [SerializeField] string skillName;
-    [SerializeField] float damageMultiplier;
-    [SerializeField] float damageMitigation;
     [SerializeField] GameObject target;
     [SerializeField] ActivationTime skillActivationTime;
-    // TODO [SerializeField] CombatCommand commandThatTriggers;
-    [SerializeField] SkillEffect thisSkillEffectScript;
+    [SerializeField] CombatCommand commandThatTriggers;
 
     [Header("RNG")]
     [SerializeField] float minActivateRNG;
     [SerializeField] float maxActivateRNG;
+
+    protected SkillType thisSkillType;
+
+    // Use abstract and override to each set their own type into the info
+    public abstract void SettingSkillType();
 
     // Getter
     public string GetSkillName()
@@ -24,14 +27,14 @@ public class SkillInfo : ScriptableObject {
         return skillName;
     }
 
-    public float GetSkillDamageMultiplier()
-    {
-        return damageMultiplier;
-    }
-
     public ActivationTime GetSkillActivationTime()
     {
         return skillActivationTime;
+    }
+
+    public CombatCommand GetCommandThatTriggersSkill()
+    {
+        return commandThatTriggers;
     }
 
     public float GetMinActivationRNG()

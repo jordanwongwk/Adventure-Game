@@ -14,43 +14,119 @@ public class CombatManager : MonoBehaviour {
 
     PlayerScript playerObjectScript;
     EnemyScript enemyObjectScript;
+    Character playerChar;
+    Character enemyChar;
     CombatUIManager myCombatUIManager;
 
     CombatCommand playerCommand;
     CombatCommand enemyCommand;
 
-	// Use this for initialization
+    bool combatEnded = false;
+
+	// Initialization and Start of Combat
 	void Start ()
     {
         playerObjectScript = FindObjectOfType<PlayerScript>();
         enemyObjectScript = FindObjectOfType<EnemyScript>();
-        myCombatUIManager = FindObjectOfType<CombatUIManager>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
-    // Activated when player chose his/her command
+        playerChar = playerObjectScript.GetPlayerCharacter();
+        enemyChar = enemyObjectScript.GetEnemyCharacter();
+
+        myCombatUIManager = FindObjectOfType<CombatUIManager>();
+
+        StartCoroutine(StartCombatProcedure());
+    }
+
+    IEnumerator StartCombatProcedure()
+    {
+        myCombatUIManager.CombatIntroductionStart();
+        yield return WaitForKeyPress();
+        myCombatUIManager.CombatIntroductionEnd();
+    }
+
+
+    // Called from playerScript when player chose his/her command
     public void StartThisTurnProgression()
     {
         // RNG a command for enemy
         enemyObjectScript.PickingEnemyCommand();
 
         // Activate all Pre-Combat abilities
-        // TODO add enemy skill
         playerObjectScript.PlayerAttemptToUseSkill(ActivationTime.beforeCombat);
         enemyObjectScript.EnemyAttemptToUseSkill(ActivationTime.beforeCombat);
 
         // Bind the command chosen and start to initiate this round's combat 
         enemyCommand = enemyObjectScript.GetChosenEnemyCommand();
         playerCommand = playerObjectScript.GetPlayerChosenCommand();
-        myCombatUIManager.ThisTurnCombatOutcome(playerCommand, enemyCommand);       // End of turn process is done after coroutine here       
+        myCombatUIManager.ThisTurnCombatCommandResult(playerCommand, enemyCommand);       // End of turn process is done after coroutine here       
+        StartCoroutine(BeginCombatProcedure());
+    }
+
+    // Begin the CORE function of the combat
+    IEnumerator BeginCombatProcedure()
+    {
+        myCombatUIManager.PreCombatUIProcedure();
+
+        yield return WaitForKeyPress();
+
+        myCombatUIManager.CommandTextBoxDisplay(false);
+
+        yield return new WaitForSeconds(0.5f);      // Delay for window to disappear OR animation to finish
+
+        int playerSpeed = playerChar.GetThisCharSpeed();
+        int enemySpeed = enemyChar.GetThisCharSpeed();
+
+        FastestUnitCombatProcedure(playerSpeed, enemySpeed);
+        // TODO activate defense skill on slowest speed unit
+
+        yield return WaitForKeyPress();
+
+        SlowestUnitCombatProcedure(playerSpeed, enemySpeed);
+        // TODO activate defense skill on fastest speed unit
+
+        yield return WaitForKeyPress();
+
+        EndOfCombatProcedure();
+
+        yield return WaitForKeyPress();
+
+        NextCombatTurnProcedure();
+    }
+
+    private void FastestUnitCombatProcedure(int playerSpeed, int enemySpeed)
+    {
+        if (playerSpeed >= enemySpeed)
+        {
+            ProcessingDuringCombatPhase(playerChar.gameObject);
+            myCombatUIManager.SetCurrentPhaseText("Player's Turn");
+
+            // if (skill == true)
+            //yield return WaitForKeyPress();
+            //Debug.Log("Allololol");
+        }
+        else
+        {
+            ProcessingDuringCombatPhase(enemyChar.gameObject);
+            myCombatUIManager.SetCurrentPhaseText("Enemy's Turn");
+        }
+    }
+
+    public void SlowestUnitCombatProcedure(int playerSpeed, int enemySpeed)
+    {
+        if (playerSpeed < enemySpeed)
+        {
+            ProcessingDuringCombatPhase(playerChar.gameObject);
+            myCombatUIManager.SetCurrentPhaseText("Player's Turn");
+        }
+        else
+        {
+            ProcessingDuringCombatPhase(enemyChar.gameObject);
+            myCombatUIManager.SetCurrentPhaseText("Enemy's Turn");
+        }
     }
 
     // Processing During Combat Outcome (turnUnit = unit that has a higher speed are selected first)
-    public void ProcessingDuringCombatPhase(GameObject turnUnit)
+    private void ProcessingDuringCombatPhase(GameObject turnUnit)
     {
         Character playerChar = playerObjectScript.GetPlayerCharacter();
         Character enemyChar = enemyObjectScript.GetEnemyCharacter();
@@ -63,13 +139,11 @@ public class CombatManager : MonoBehaviour {
         if (turnUnit == playerObjectScript.gameObject)
         {
             isPlayerTurn = true;
-            playerObjectScript.PlayerAttemptToUseSkill(ActivationTime.duringCombat);
+            playerObjectScript.PlayerAttemptToUseSkill(ActivationTime.duringCombatOffense);
         }
         else
         {
-            enemyObjectScript.EnemyAttemptToUseSkill(ActivationTime.duringCombat);
-            // enemy attempt skill
-            Debug.Log("Enemy SKILL TIME");
+            enemyObjectScript.EnemyAttemptToUseSkill(ActivationTime.duringCombatOffense);
         }
 
         switch (playerCommand)
@@ -177,15 +251,41 @@ public class CombatManager : MonoBehaviour {
     }
 
 
-    public void EndOfTurnProcess()
+    private void EndOfCombatProcedure()
     {
+        // Activate End of Combat Skills
         playerObjectScript.PlayerAttemptToUseSkill(ActivationTime.afterCombat);
         enemyObjectScript.EnemyAttemptToUseSkill(ActivationTime.afterCombat);
+
+        myCombatUIManager.EndOfCombatTurnUI();
+    }
+
+    private void NextCombatTurnProcedure()
+    {
+        myCombatUIManager.NextCombatTurnUI();
     }
 
     public void EndOfCombat(GameObject defeatedCharacter)
     {
-        myCombatUIManager.SetCombatHasEnded(true);
+        combatEnded = true;
         myCombatUIManager.EndOfCombatResult(defeatedCharacter);
+    }
+
+
+
+    IEnumerator WaitForKeyPress()
+    {
+        bool isPressed = false;
+        while (!isPressed)
+        {
+            if (Input.GetMouseButtonDown(0) && !combatEnded)
+            {
+                isPressed = true;
+
+                // Turn off Skill UI upon key press
+                myCombatUIManager.TurnOffSkillUI();
+            }
+            yield return null;
+        }
     }
 }
