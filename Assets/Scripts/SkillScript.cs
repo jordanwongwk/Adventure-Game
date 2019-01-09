@@ -8,14 +8,17 @@ public class SkillScript : MonoBehaviour {
 
     [SerializeField] List<SkillInfo> thisCharacterSkills = new List<SkillInfo>();
 
-    //List<bool> skillActivationThisRound = new List<bool>();
+    bool charIsUsingSkill = false;
 
+    Character thisCharacter;
+    Character thisCharacterOpponent;
     CombatUIManager myCombatUIManager;
 
     // Use this for initialization
     void Start ()
     {
         myCombatUIManager = FindObjectOfType<CombatUIManager>();
+        thisCharacter = GetComponent<Character>();
 
         // If its player
         if (GetComponent<EnemyScript>() != null)
@@ -40,6 +43,24 @@ public class SkillScript : MonoBehaviour {
         }
     }
 
+    // Setter
+    public void SetThisCharacterOpponent(Character thisCharOppo)
+    {
+        thisCharacterOpponent = thisCharOppo;
+    }
+
+    public void SetThisCharacterUsingSkill(bool status)
+    {
+        charIsUsingSkill = status;
+    }
+
+    // Getter
+    public bool GetIsThisCharacterUsingSkill()
+    {
+        return charIsUsingSkill;
+    }
+
+
     public void AttemptToUseSkill(ActivationTime currentTime, CombatCommand unitCommand)
     {
         float randomValue = Random.Range(0f, 100f);
@@ -53,12 +74,24 @@ public class SkillScript : MonoBehaviour {
                     {
                         if (thisCharacterSkills[i].GetSkillActivationTime() != currentTime) { continue; }
 
-                        Debug.Log("Skill activated in " + currentTime.ToString());
+                        // TODO charIsUsingSkill = true;
                         myCombatUIManager.UsingSkillDisplayUI(this.gameObject, thisCharacterSkills[i].GetSkillName());
+                        SkillType thisSkillType = thisCharacterSkills[i].GetSkillType();
 
-                        
-                        //float damage = (thisCharacterSkills[i] as BuffingSkills).GetStrengthBuffMultiplier();
-                        // TODO activate skill here?
+                        switch (thisSkillType)
+                        {
+                            case SkillType.HealthPointRelated:
+                                ProcessHealthPointRelatedSkill(thisCharacterSkills[i]);
+                                break;
+
+                            case SkillType.Buffing:
+                                ProcessBuffingSkill(thisCharacterSkills[i]);
+                                break;
+
+                            default:
+                                Debug.LogError("Error in processing " + thisCharacterSkills[i].GetSkillName() + " at " + currentTime.ToString());
+                                break;
+                        }
                         break;
                     }
                 }
@@ -72,9 +105,24 @@ public class SkillScript : MonoBehaviour {
                         if (thisCharacterSkills[i].GetSkillActivationTime() != currentTime) { continue; }
                         if (thisCharacterSkills[i].GetCommandThatTriggersSkill() != unitCommand) { continue; }
 
-                        Debug.Log("Skill activated in " + currentTime.ToString());
+                        charIsUsingSkill = true;
                         myCombatUIManager.UsingSkillDisplayUI(this.gameObject, thisCharacterSkills[i].GetSkillName());
-                        // TODO activate skill here?
+                        SkillType thisSkillType = thisCharacterSkills[i].GetSkillType();
+
+                        switch (thisSkillType)
+                        {
+                            case SkillType.HealthPointRelated:
+                                ProcessHealthPointRelatedSkill(thisCharacterSkills[i]);
+                                break;
+
+                            case SkillType.Buffing:
+                                ProcessBuffingSkill(thisCharacterSkills[i]);
+                                break;
+
+                            default:
+                                Debug.LogError("Error in processing " + thisCharacterSkills[i].GetSkillName() + " at " + currentTime.ToString());
+                                break;
+                        }
                         break;
                     }
                 }
@@ -90,9 +138,24 @@ public class SkillScript : MonoBehaviour {
                         // Like if enemy attack and you guard, still can counter. If enemy guard, you counter, thats a bit odd
                         if (thisCharacterSkills[i].GetCommandThatTriggersSkill() != unitCommand) { continue; }
 
-                        Debug.Log("Skill activated in " + currentTime.ToString());
+                        // TODO charIsUsingSkill = true;
                         myCombatUIManager.UsingSkillDisplayUI(this.gameObject, thisCharacterSkills[i].GetSkillName());
-                        // TODO activate skill here?
+                        SkillType thisSkillType = thisCharacterSkills[i].GetSkillType();
+
+                        switch (thisSkillType)
+                        {
+                            case SkillType.HealthPointRelated:
+                                ProcessHealthPointRelatedSkill(thisCharacterSkills[i]);
+                                break;
+
+                            case SkillType.Buffing:
+                                ProcessBuffingSkill(thisCharacterSkills[i]);
+                                break;
+
+                            default:
+                                Debug.LogError("Error in processing " + thisCharacterSkills[i].GetSkillName() + " at " + currentTime.ToString());
+                                break;
+                        }
                         break;
                     }
                 }
@@ -105,9 +168,24 @@ public class SkillScript : MonoBehaviour {
                     {
                         if (thisCharacterSkills[i].GetSkillActivationTime() != currentTime) { continue; }
 
-                        Debug.Log("Skill activated in " + currentTime.ToString());
+                        // TODO charIsUsingSkill = true;
                         myCombatUIManager.UsingSkillDisplayUI(this.gameObject, thisCharacterSkills[i].GetSkillName());
-                        // TODO activate skill here?
+                        SkillType thisSkillType = thisCharacterSkills[i].GetSkillType();
+
+                        switch (thisSkillType)
+                        {
+                            case SkillType.HealthPointRelated:
+                                ProcessHealthPointRelatedSkill(thisCharacterSkills[i]);
+                                break;
+
+                            case SkillType.Buffing:
+                                ProcessBuffingSkill(thisCharacterSkills[i]);
+                                break;
+
+                            default:
+                                Debug.LogError("Error in processing " + thisCharacterSkills[i].GetSkillName() + " at " + currentTime.ToString());
+                                break;
+                        }
                         break;
                     }
                 }
@@ -117,5 +195,42 @@ public class SkillScript : MonoBehaviour {
                 Debug.LogError("Error in processing skill.");
                 break;
         }
+    }
+
+
+
+    private void ProcessHealthPointRelatedSkill(SkillInfo thisSkill)
+    {
+        float totalDamage = (thisSkill as HealthPointSkills).GetDamageMultiplier() * thisCharacter.GetThisCharStrength();
+        Debug.Log(thisSkill.GetSkillName() + " Damage Dealt: " + totalDamage);
+
+        Target skillTarget = thisSkill.GetSkillTarget();
+
+        switch (skillTarget)
+        {
+            case Target.Self:
+                thisCharacter.ThisCharacterTakingDamage((int)totalDamage);
+                break;
+
+            case Target.Opponent:
+                thisCharacter.AttackAnimation();
+                thisCharacterOpponent.ThisCharacterTakingDamage((int)totalDamage);
+                myCombatUIManager.DisplaySkillEffectText(thisCharacter.name + " uses " + thisSkill.GetSkillName() + "\nDealing " + (int)totalDamage +
+                                                        " to " + thisCharacterOpponent.name + "!");
+                break;
+
+            default:
+                Debug.LogError("Can't log target for skill " + thisSkill.GetSkillName());
+                break;
+        }
+    }
+
+    private void ProcessBuffingSkill(SkillInfo thisSkill)
+    {
+        // Get Target
+        // Get Target Character
+        // Buff STR
+        // Buff DEF
+        // Buff SPD
     }
 }

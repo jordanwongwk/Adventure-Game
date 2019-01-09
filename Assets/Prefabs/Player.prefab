@@ -252,7 +252,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   thisCharacterSkills:
-  - {fileID: 11400000, guid: 4e24942ac08539547a75dfdca6491934, type: 2}
+  - {fileID: 11400000, guid: 752471b395173cb47873e80706cea76a, type: 2}
   - {fileID: 11400000, guid: 30971b8a4d21f234eabe3663064cf35c, type: 2}
   - {fileID: 11400000, guid: f0bf134cb7a8bff44bb65397be84900c, type: 2}
 --- !u!114 &114775669089454400
@@ -512,7 +512,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -200, y: 295}
+  m_AnchoredPosition: {x: -200, y: 300}
   m_SizeDelta: {x: 971.56, y: 216.91}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224689339784426590
@@ -550,7 +550,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -200, y: 256}
+  m_AnchoredPosition: {x: -200, y: 260}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224902770299462592

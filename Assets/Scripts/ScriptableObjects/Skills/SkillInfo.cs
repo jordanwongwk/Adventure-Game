@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum SkillType { healthPointRelated, buffing }
+public enum SkillType { HealthPointRelated, Buffing }
+public enum Target { Self, Opponent }
 
 public abstract class SkillInfo : ScriptableObject {
 
     [Header("Skill Information")]
     [SerializeField] string skillName;
-    [SerializeField] GameObject target;
     [SerializeField] ActivationTime skillActivationTime;
     [SerializeField] CombatCommand commandThatTriggers;
+    [SerializeField] Target skillTarget;
 
     [Header("RNG")]
     [SerializeField] float minActivateRNG;
@@ -35,6 +36,16 @@ public abstract class SkillInfo : ScriptableObject {
     public CombatCommand GetCommandThatTriggersSkill()
     {
         return commandThatTriggers;
+    }
+
+    public Target GetSkillTarget()
+    {
+        return skillTarget;
+    }
+
+    public SkillType GetSkillType()
+    {
+        return thisSkillType;
     }
 
     public float GetMinActivationRNG()

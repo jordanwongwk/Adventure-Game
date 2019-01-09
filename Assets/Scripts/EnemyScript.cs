@@ -10,13 +10,17 @@ public class EnemyScript : MonoBehaviour
 
     CombatCommand chosenEnemyCommand;
     Character myCharacter;
+    Character myOpponent;
     SkillScript mySkillScript;
 
     // Use Awake as CombatManagers need to take in character in Start
     void Awake ()
     {
         myCharacter = GetComponent<Character>();
+        myOpponent = FindObjectOfType<PlayerScript>().GetComponent<Character>();
         mySkillScript = GetComponent<SkillScript>();
+
+        mySkillScript.SetThisCharacterOpponent(myOpponent);
 
         GetComponent<SpriteRenderer>().sprite = enemyEncountered.GetEnemySprite();
     }
@@ -66,5 +70,10 @@ public class EnemyScript : MonoBehaviour
     public Character GetEnemyCharacter()
     {
         return myCharacter;
+    }
+
+    public SkillScript GetEnemySkillScript()
+    {
+        return mySkillScript;
     }
 }

@@ -9,12 +9,11 @@ public class HealthPointSkills : SkillInfo {
     [SerializeField] float damageMultiplier = 1.5f;
     [SerializeField] float damageToCaster = 0f;
 
-    SkillType skillIdentity = SkillType.healthPointRelated;
+    SkillType skillIdentity = SkillType.HealthPointRelated;
 
     public override void SettingSkillType()
     {
         base.thisSkillType = skillIdentity;
-        Debug.Log("Set HP Skills");
     }
 
     public float GetDamageMultiplier()

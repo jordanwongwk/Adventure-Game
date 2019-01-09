@@ -16,6 +16,8 @@ public class CombatManager : MonoBehaviour {
     EnemyScript enemyObjectScript;
     Character playerChar;
     Character enemyChar;
+    SkillScript playerSkillScript;
+    SkillScript enemySkillScript;
     CombatUIManager myCombatUIManager;
 
     CombatCommand playerCommand;
@@ -31,6 +33,9 @@ public class CombatManager : MonoBehaviour {
 
         playerChar = playerObjectScript.GetPlayerCharacter();
         enemyChar = enemyObjectScript.GetEnemyCharacter();
+
+        playerSkillScript = playerObjectScript.GetPlayerSkillScript();
+        enemySkillScript = enemyObjectScript.GetEnemySkillScript();
 
         myCombatUIManager = FindObjectOfType<CombatUIManager>();
 
@@ -99,10 +104,6 @@ public class CombatManager : MonoBehaviour {
         {
             ProcessingDuringCombatPhase(playerChar.gameObject);
             myCombatUIManager.SetCurrentPhaseText("Player's Turn");
-
-            // if (skill == true)
-            //yield return WaitForKeyPress();
-            //Debug.Log("Allololol");
         }
         else
         {
@@ -139,29 +140,24 @@ public class CombatManager : MonoBehaviour {
         if (turnUnit == playerObjectScript.gameObject)
         {
             isPlayerTurn = true;
-            playerObjectScript.PlayerAttemptToUseSkill(ActivationTime.duringCombatOffense);
         }
-        else
-        {
-            enemyObjectScript.EnemyAttemptToUseSkill(ActivationTime.duringCombatOffense);
-        }
-
+        
         switch (playerCommand)
         {
             case CombatCommand.attack:
                 if (isPlayerTurn)
                 {
-                    StartCoroutine(BattleOutcome(playerChar, playerCommand, enemyChar, enemyCommand, playerStrength));
+                    PlayerAttackingEnemy(playerChar, enemyChar, playerStrength);
                 }
                 else
                 {
                     if (enemyCommand == CombatCommand.attack)
                     {
-                        StartCoroutine(BattleOutcome(enemyChar, enemyCommand, playerChar, playerCommand, enemyStrength));
+                        EnemyAttackingPlayer(playerChar, enemyChar, enemyStrength);
                     }
                     else if (enemyCommand == CombatCommand.powerAttack)
                     {
-                        StartCoroutine(BattleOutcome(enemyChar, enemyCommand, playerChar, playerCommand, enemyStrength * 2));
+                        EnemyAttackingPlayer(playerChar, enemyChar, enemyStrength*2);
                     }
                     else if (enemyCommand == CombatCommand.guard)
                     {
@@ -175,22 +171,22 @@ public class CombatManager : MonoBehaviour {
                 {
                     if (isPlayerTurn)
                     {
-                        StartCoroutine(BattleOutcome(playerChar, playerCommand, enemyChar, enemyCommand, playerStrength * 2));
+                        PlayerAttackingEnemy(playerChar, enemyChar, playerStrength * 2);
                     }
                     else
                     {
-                        StartCoroutine(BattleOutcome(enemyChar, enemyCommand, playerChar, playerCommand, enemyStrength));
+                        EnemyAttackingPlayer(playerChar, enemyChar, enemyStrength);
                     }
                 }
                 else if (enemyCommand == CombatCommand.powerAttack)
                 {
                     if (isPlayerTurn)
                     {
-                        StartCoroutine(BattleOutcome(playerChar, playerCommand, enemyChar, enemyCommand, playerStrength * 2));
+                        PlayerAttackingEnemy(playerChar, enemyChar, playerStrength * 2);
                     }
                     else
                     {
-                        StartCoroutine(BattleOutcome(enemyChar, enemyCommand, playerChar, playerCommand, enemyStrength * 2));
+                        EnemyAttackingPlayer(playerChar, enemyChar, enemyStrength * 2);
                     }
                 }
                 else if (enemyCommand == CombatCommand.guard)
@@ -218,7 +214,7 @@ public class CombatManager : MonoBehaviour {
                 {
                     if (enemyCommand == CombatCommand.attack)
                     {
-                        StartCoroutine(BattleOutcome(enemyChar, enemyCommand, playerChar, playerCommand, enemyStrength));
+                        EnemyAttackingPlayer(playerChar, enemyChar, enemyStrength);
                     }
                     else if (enemyCommand == CombatCommand.powerAttack)
                     {
@@ -248,6 +244,36 @@ public class CombatManager : MonoBehaviour {
         yield return new WaitForSeconds(0.3f);      //TODO find length
         targetChar.ThisCharacterTakingDamage(damage);
         myCombatUIManager.DisplayDuringCombatText(attackingChar.gameObject, attackingCommand, targetCommand);
+    }
+
+    private void PlayerAttackingEnemy(Character playerChar, Character enemyChar, int damage)
+    {
+        playerObjectScript.PlayerAttemptToUseSkill(ActivationTime.duringCombatOffense);
+
+        bool playerUseSkill = playerSkillScript.GetIsThisCharacterUsingSkill();
+
+        // Normal attack if no skill is used
+        if (!playerUseSkill) { StartCoroutine(BattleOutcome(playerChar, playerCommand, enemyChar, enemyCommand, damage)); }
+
+        // TODO add enemy defense skill
+
+        // Reset the boolean back to false
+        playerSkillScript.SetThisCharacterUsingSkill(false);
+    }
+
+    private void EnemyAttackingPlayer(Character playerChar, Character enemyChar, int damage)
+    {
+        enemyObjectScript.EnemyAttemptToUseSkill(ActivationTime.duringCombatOffense);
+
+        bool enemyUseSkill = enemySkillScript.GetIsThisCharacterUsingSkill();
+
+        // Normal attack if no skill is used
+        if (!enemyUseSkill) { StartCoroutine(BattleOutcome(enemyChar, enemyCommand, playerChar, playerCommand, damage)); }
+
+        // TODO add player defense skill
+
+        // Reset the boolean back to false
+        enemySkillScript.SetThisCharacterUsingSkill(false);
     }
 
 

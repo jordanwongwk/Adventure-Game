@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Name: Eagle_Shriek
   m_EditorClassIdentifier: 
   skillName: Shriek
-  target: {fileID: 1708285566634882, guid: df73e8d538b28ea4d85d1ffa730657b9, type: 2}
   skillActivationTime: 0
   commandThatTriggers: 0
+  skillTarget: 0
   minActivateRNG: 0
-  maxActivateRNG: 50
+  maxActivateRNG: 0
   strengthBuffMultiplier: 0
   strengthDebuffMultiplier: 1.5

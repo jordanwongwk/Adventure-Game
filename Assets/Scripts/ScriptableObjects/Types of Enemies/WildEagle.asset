@@ -22,3 +22,4 @@ MonoBehaviour:
   thisEnemySpecialSkills:
   - {fileID: 11400000, guid: fd725b08688a33b47b15d121d89bdb0e, type: 2}
   - {fileID: 11400000, guid: 6ec85c763f5cf72499d6e80520d0f209, type: 2}
+  - {fileID: 11400000, guid: 4ca6b91451d1afd40a5835bcac04fc44, type: 2}

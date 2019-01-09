@@ -12,12 +12,11 @@ public class BuffingSkills : SkillInfo {
     [SerializeField] float strengthDebuffMultiplier = 1.5f;
     // Still got DEF and SPD etc.
 
-    SkillType skillIdentity = SkillType.buffing;
+    SkillType skillIdentity = SkillType.Buffing;
 
     public override void SettingSkillType()
     {
         base.thisSkillType = skillIdentity;
-        Debug.Log("Set Buff Skills");
     }
 
     public float GetStrengthBuffMultiplier()

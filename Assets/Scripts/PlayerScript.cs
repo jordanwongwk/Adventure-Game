@@ -7,6 +7,7 @@ public class PlayerScript : MonoBehaviour
 {
     CombatCommand chosenCommand;
     Character myCharacter;
+    Character myOpponent;
     CombatManager myCombatManager;
     SkillScript mySkillScript;
 
@@ -14,8 +15,11 @@ public class PlayerScript : MonoBehaviour
     void Awake()
     {
         myCharacter = GetComponent<Character>();
+        myOpponent = FindObjectOfType<EnemyScript>().GetComponent<Character>();
         myCombatManager = FindObjectOfType<CombatManager>();
         mySkillScript = GetComponent<SkillScript>();
+
+        mySkillScript.SetThisCharacterOpponent(myOpponent);
     }
 
     public void OnClickExecuteCommand(int commandInt)
@@ -39,5 +43,10 @@ public class PlayerScript : MonoBehaviour
     public Character GetPlayerCharacter()
     {
         return myCharacter;
+    }
+
+    public SkillScript GetPlayerSkillScript()
+    {
+        return mySkillScript;
     }
 }

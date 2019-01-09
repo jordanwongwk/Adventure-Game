@@ -65,11 +65,15 @@ public class CombatUIManager : MonoBehaviour {
         string playerCommandString = playerCommand.ToString();
         string enemyCommandString = enemyCommand.ToString();
 
-        if (playerCommand == CombatCommand.powerAttack) { playerCommandString = "power attack"; }
-        if (enemyCommand == CombatCommand.powerAttack) { enemyCommandString = "power attack"; }
+        if (playerCommand == CombatCommand.powerAttack) { playerCommandString = "Power attack"; }
+        if (enemyCommand == CombatCommand.powerAttack) { enemyCommandString = "Power attack"; }
 
-        playerCommandText.text = "Player uses " + playerCommandString + "!";
-        enemyCommandText.text = "Enemy uses " + enemyCommandString + "!";
+        // Change the first letter to upper case followed by the rest of the string (substring)
+        playerCommandString = char.ToUpper(playerCommandString[0]) + playerCommandString.Substring(1);
+        enemyCommandString = char.ToUpper(enemyCommandString[0]) + enemyCommandString.Substring(1);
+
+        playerCommandText.text = playerCommandString;
+        enemyCommandText.text = enemyCommandString;
     }
 
     // Phase text change
@@ -184,6 +188,11 @@ public class CombatUIManager : MonoBehaviour {
     {
         playerSkillTextBoxAnimator.SetBool("SlideInWindow", false);
         enemySkillTextBoxAnimator.SetBool("SlideInWindow", false);
+    }
+
+    public void DisplaySkillEffectText(string skillString)
+    {
+        turnOutcome.text = skillString;
     }
     // END : General - All Timing
 

@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Name: Eagle_Dive Attack
   m_EditorClassIdentifier: 
   skillName: Dive Attack
-  target: {fileID: 1708285566634882, guid: df73e8d538b28ea4d85d1ffa730657b9, type: 2}
   skillActivationTime: 1
   commandThatTriggers: 2
+  skillTarget: 1
   minActivateRNG: 0
   maxActivateRNG: 100
-  damageMultiplier: 1.5
+  damageMultiplier: 2.5
   damageToCaster: 0

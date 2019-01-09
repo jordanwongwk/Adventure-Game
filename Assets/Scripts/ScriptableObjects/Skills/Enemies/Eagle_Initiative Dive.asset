@@ -9,13 +9,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d4368e9276e3e2044aebfbdeb646a25e, type: 3}
-  m_Name: Quick Attack
+  m_Name: Eagle_Initiative Dive
   m_EditorClassIdentifier: 
-  skillName: Quick Attack
-  skillActivationTime: 3
+  skillName: Initiative Dive
+  skillActivationTime: 0
   commandThatTriggers: 0
   skillTarget: 1
   minActivateRNG: 0
   maxActivateRNG: 100
-  damageMultiplier: 1.5
+  damageMultiplier: 1
   damageToCaster: 0
