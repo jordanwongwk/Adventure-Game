@@ -223,8 +223,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1773c9c7483ef244ba3af1792ef5f86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthPoints: 30
+  maxHealthPoints: 30
   strength: 5
+  defense: 2
   speed: 10
   healthText: {fileID: 114775669089454400}
   nameText: {fileID: 114981500973966694}
@@ -252,8 +253,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   thisCharacterSkills:
-  - {fileID: 11400000, guid: 752471b395173cb47873e80706cea76a, type: 2}
   - {fileID: 11400000, guid: 30971b8a4d21f234eabe3663064cf35c, type: 2}
+  - {fileID: 11400000, guid: 4dbfe363ff3eb664ba7d260ee9c5fb00, type: 2}
   - {fileID: 11400000, guid: f0bf134cb7a8bff44bb65397be84900c, type: 2}
 --- !u!114 &114775669089454400
 MonoBehaviour:

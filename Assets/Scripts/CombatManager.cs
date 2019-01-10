@@ -56,23 +56,76 @@ public class CombatManager : MonoBehaviour {
         // RNG a command for enemy
         enemyObjectScript.PickingEnemyCommand();
 
-        // Activate all Pre-Combat abilities
-        playerObjectScript.PlayerAttemptToUseSkill(ActivationTime.beforeCombat);
-        enemyObjectScript.EnemyAttemptToUseSkill(ActivationTime.beforeCombat);
-
         // Bind the command chosen and start to initiate this round's combat 
         enemyCommand = enemyObjectScript.GetChosenEnemyCommand();
         playerCommand = playerObjectScript.GetPlayerChosenCommand();
-        myCombatUIManager.ThisTurnCombatCommandResult(playerCommand, enemyCommand);       // End of turn process is done after coroutine here       
-        StartCoroutine(BeginCombatProcedure());
+        myCombatUIManager.ThisTurnCombatCommandResult(playerCommand, enemyCommand);
+
+        myCombatUIManager.PreCombatUIProcedure();
+
+        // Activate all Pre-Combat abilities 
+        PreCombatEndCombatSkillActivation(playerChar, 0, ActivationTime.beforeCombat);
+    }
+
+    // Use Dynamic Programming to process skill count
+    private void PreCombatEndCombatSkillActivation(Character currentChar, int processCount, ActivationTime currentTime)
+    {
+        bool skillActivated = false;
+
+        // Once done process both character, move on to next phase
+        if (processCount == 2)
+        {
+            StartCoroutine(ProgressNextPhaseAfterSkillResolved(currentTime));
+            return;
+        }
+
+        processCount++;
+
+        if (currentChar == playerChar)
+        {
+            playerObjectScript.PlayerAttemptToUseSkill(currentTime);
+            skillActivated = playerSkillScript.GetIsThisCharacterUsingSkill();
+
+            if (skillActivated) { StartCoroutine(PreCombatWaitForKeyPress(playerSkillScript, processCount, enemyChar, currentTime)); }
+            else { PreCombatEndCombatSkillActivation(enemyChar, processCount, currentTime); }
+        }
+        else if (currentChar == enemyChar)
+        {
+            enemyObjectScript.EnemyAttemptToUseSkill(currentTime);
+            skillActivated = enemySkillScript.GetIsThisCharacterUsingSkill();
+
+            if (skillActivated) { StartCoroutine(PreCombatWaitForKeyPress(enemySkillScript, processCount, playerChar, currentTime)); }
+            else { PreCombatEndCombatSkillActivation(playerChar, processCount, currentTime); }
+        }
+    }
+
+    IEnumerator ProgressNextPhaseAfterSkillResolved(ActivationTime currentTime)
+    {
+        myCombatUIManager.SetTurnOutcomeText("All effects in this phase are resolved.\nTap to progress the battle.");
+
+        yield return WaitForKeyPress();
+
+        if (currentTime == ActivationTime.beforeCombat)
+        {
+            StartCoroutine(BeginCombatProcedure());
+        }
+        else if (currentTime == ActivationTime.afterCombat)
+        {
+            NextCombatTurnProcedure();
+        }
+    }
+
+    IEnumerator PreCombatWaitForKeyPress(SkillScript charSkillScript, int processCount, Character nextCharacter, ActivationTime currentTime)
+    {
+        yield return WaitForKeyPress();
+        charSkillScript.SetThisCharacterUsingSkill(false);
+        PreCombatEndCombatSkillActivation(nextCharacter, processCount, currentTime);
     }
 
     // Begin the CORE function of the combat
     IEnumerator BeginCombatProcedure()
     {
-        myCombatUIManager.PreCombatUIProcedure();
-
-        yield return WaitForKeyPress();
+        //yield return WaitForKeyPress();
 
         myCombatUIManager.CommandTextBoxDisplay(false);
 
@@ -92,10 +145,6 @@ public class CombatManager : MonoBehaviour {
         yield return WaitForKeyPress();
 
         EndOfCombatProcedure();
-
-        yield return WaitForKeyPress();
-
-        NextCombatTurnProcedure();
     }
 
     private void FastestUnitCombatProcedure(int playerSpeed, int enemySpeed)
@@ -280,8 +329,7 @@ public class CombatManager : MonoBehaviour {
     private void EndOfCombatProcedure()
     {
         // Activate End of Combat Skills
-        playerObjectScript.PlayerAttemptToUseSkill(ActivationTime.afterCombat);
-        enemyObjectScript.EnemyAttemptToUseSkill(ActivationTime.afterCombat);
+        PreCombatEndCombatSkillActivation(playerChar, 0, ActivationTime.afterCombat);
 
         myCombatUIManager.EndOfCombatTurnUI();
     }

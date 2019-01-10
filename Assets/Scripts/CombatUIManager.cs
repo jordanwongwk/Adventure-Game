@@ -150,7 +150,6 @@ public class CombatUIManager : MonoBehaviour {
     public void EndOfCombatTurnUI()
     {
         currentPhaseText.text = "Ending Phase";
-        turnOutcome.text = "Current turn has ended.";
     }
 
     public void NextCombatTurnUI()
@@ -190,9 +189,9 @@ public class CombatUIManager : MonoBehaviour {
         enemySkillTextBoxAnimator.SetBool("SlideInWindow", false);
     }
 
-    public void DisplaySkillEffectText(string skillString)
+    public void SetTurnOutcomeText(string currentString)
     {
-        turnOutcome.text = skillString;
+        turnOutcome.text = currentString;
     }
     // END : General - All Timing
 

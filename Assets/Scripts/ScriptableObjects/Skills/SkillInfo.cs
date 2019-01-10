@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum SkillType { HealthPointRelated, Buffing }
+public enum SkillType { Damage, Heal, Buffing }
 public enum Target { Self, Opponent }
 
 public abstract class SkillInfo : ScriptableObject {
