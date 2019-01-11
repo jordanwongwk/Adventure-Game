@@ -103,6 +103,13 @@ public class CombatManager : MonoBehaviour {
     {
         myCombatUIManager.SetTurnOutcomeText("All effects in this phase are resolved.\nTap to progress the battle.");
 
+        // After combat, resolving buff debuff duration
+        if (currentTime == ActivationTime.afterCombat)
+        {
+            playerChar.CheckForThisCharacterBuffDebuffDuration();
+            enemyChar.CheckForThisCharacterBuffDebuffDuration();
+        }
+
         yield return WaitForKeyPress();
 
         if (currentTime == ActivationTime.beforeCombat)
@@ -330,7 +337,6 @@ public class CombatManager : MonoBehaviour {
     {
         // Activate End of Combat Skills
         PreCombatEndCombatSkillActivation(playerChar, 0, ActivationTime.afterCombat);
-
         myCombatUIManager.EndOfCombatTurnUI();
     }
 

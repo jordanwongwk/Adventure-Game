@@ -15,7 +15,9 @@ MonoBehaviour:
   skillActivationTime: 3
   commandThatTriggers: 0
   skillTarget: 1
-  minActivateRNG: 0
-  maxActivateRNG: 100
-  damageMultiplier: 1.5
+  skillParticleEffect: {fileID: 0}
+  skillAudioClip: {fileID: 0}
+  minActivateRNG: 40
+  maxActivateRNG: 90
+  damageMultiplier: 1.25
   damageToCaster: 0

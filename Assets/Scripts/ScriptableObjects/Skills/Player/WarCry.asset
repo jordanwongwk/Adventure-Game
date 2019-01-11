@@ -9,22 +9,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b08aec53b2b9f4d48ae26fcc00142609, type: 3}
-  m_Name: Eagle_Shriek
+  m_Name: WarCry
   m_EditorClassIdentifier: 
-  skillName: Shriek
+  skillName: War Cry
   skillActivationTime: 0
   commandThatTriggers: 0
-  skillTarget: 1
-  skillParticleEffect: {fileID: 1921271499594202, guid: 485ef68f02478094f90dff2f3fcf7191,
+  skillTarget: 0
+  skillParticleEffect: {fileID: 1657662291490068, guid: 92ffb49c9df321d4ba52ead9aaf1a955,
     type: 2}
-  skillAudioClip: {fileID: 8300000, guid: 0ac94c4c8069bf8469bf835b44e23c4c, type: 3}
-  minActivateRNG: 30
-  maxActivateRNG: 80
-  duration: 1
-  strengthBuffMultiplier: 1
-  defenseBuffMultiplier: 1
+  skillAudioClip: {fileID: 8300000, guid: e22f8a22da6bbe842a412a3ab7e97098, type: 3}
+  minActivateRNG: 31
+  maxActivateRNG: 70
+  duration: 3
+  strengthBuffMultiplier: 1.25
+  defenseBuffMultiplier: 1.5
   speedBuffMultiplier: 1
-  strengthDebuffMultiplier: 1.5
+  strengthDebuffMultiplier: 1
   defenseDebuffMultiplier: 1
   speedDebuffMultiplier: 1
-  outcomeTextForBuffDebuff: Decreasing opponent's strength!
+  outcomeTextForBuffDebuff: Increasing player's strength and defense!

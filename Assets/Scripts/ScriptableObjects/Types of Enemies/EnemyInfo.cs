@@ -15,6 +15,7 @@ public class EnemyInfo : ScriptableObject {
     [SerializeField] int level;
     [SerializeField] int healthPoints;
     [SerializeField] int strength;
+    [SerializeField] int defense;
     [SerializeField] int speed;
     [SerializeField] List<SkillInfo> thisEnemySpecialSkills;
 
@@ -49,6 +50,11 @@ public class EnemyInfo : ScriptableObject {
     public int GetEnemyStrength()
     {
         return strength;
+    }
+
+    public int GetEnemyDefense()
+    {
+        return defense;
     }
 
     public int GetEnemySpeed()

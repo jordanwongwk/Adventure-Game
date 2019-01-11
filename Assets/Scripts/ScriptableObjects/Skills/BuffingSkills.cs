@@ -18,6 +18,9 @@ public class BuffingSkills : SkillInfo {
     [SerializeField] float defenseDebuffMultiplier = 1f;
     [SerializeField] float speedDebuffMultiplier = 1f;
 
+    [Header("Buff Outcome Text")]
+    [SerializeField] string outcomeTextForBuffDebuff = "";
+
     SkillType skillIdentity = SkillType.Buffing;
 
     public override void SettingSkillType()
@@ -29,6 +32,11 @@ public class BuffingSkills : SkillInfo {
     public int GetBuffDebuffDuration()
     {
         return duration;
+    }
+
+    public string GetOutcomeTextForBuffDebuff()
+    {
+        return outcomeTextForBuffDebuff;
     }
 
     // Buff

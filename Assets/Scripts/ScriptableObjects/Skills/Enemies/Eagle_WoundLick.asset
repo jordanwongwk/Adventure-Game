@@ -15,7 +15,10 @@ MonoBehaviour:
   skillActivationTime: 3
   commandThatTriggers: 0
   skillTarget: 0
+  skillParticleEffect: {fileID: 1078763986401678, guid: 50737098843240349bafce443aae9786,
+    type: 2}
+  skillAudioClip: {fileID: 8300000, guid: dbc593db0ce012a46aa7c5dd62b9809e, type: 3}
   minActivateRNG: 0
-  maxActivateRNG: 100
-  healAmountMin: 2
+  maxActivateRNG: 50
+  healAmountMin: 3
   healAmountMax: 6

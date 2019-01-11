@@ -12,6 +12,8 @@ public abstract class SkillInfo : ScriptableObject {
     [SerializeField] ActivationTime skillActivationTime;
     [SerializeField] CombatCommand commandThatTriggers;
     [SerializeField] Target skillTarget;
+    [SerializeField] GameObject skillParticleEffect;
+    [SerializeField] AudioClip skillAudioClip;
 
     [Header("RNG")]
     [SerializeField] float minActivateRNG;
@@ -41,6 +43,16 @@ public abstract class SkillInfo : ScriptableObject {
     public Target GetSkillTarget()
     {
         return skillTarget;
+    }
+
+    public GameObject GetSkillParticleEffect()
+    {
+        return skillParticleEffect;
+    }
+
+    public AudioClip GetSkillAudioClip()
+    {
+        return skillAudioClip;
     }
 
     public SkillType GetSkillType()

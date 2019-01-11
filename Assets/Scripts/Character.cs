@@ -17,23 +17,30 @@ public class Character : MonoBehaviour {
     [SerializeField] Text nameText;
     [SerializeField] Image healthForeground;
 
-    int initialStrength;
-    int initialDefense;
-    int initialSpeed;
-
     int thisTurnDamage = 0;
     int currentHealth;
     int resultHealth;
 
+    List<float> statList = new List<float>();
+    List<int> buffDuration = new List<int>();
+    List<int> debuffDuration = new List<int>();
+    List<float> buffMultiplier = new List<float>();
+    List<float> debuffMultiplier = new List<float>();
+
     CombatManager myCombatManager;
+    CombatUIManager myCombatUIManager;
     Animator myAnimatorController;
 
     const float LERPING_SPEED = 3.0f;
+    const int STRENGTH_INDEX = 0;
+    const int DEFENSE_INDEX = 1;
+    const int SPEED_INDEX = 2;
 
     // Use this for initialization
     void Start ()
     {
         myCombatManager = FindObjectOfType<CombatManager>();
+        myCombatUIManager = FindObjectOfType<CombatUIManager>();
         myAnimatorController = GetComponent<Animator>();
 
         if (GetComponent<EnemyScript>())
@@ -44,6 +51,7 @@ public class Character : MonoBehaviour {
 
         InitializingCharacterHealthAndHealthUI();
         InitializingCharacterStats();
+        InitializingCharacterBuffDebuffList();
     }
 
     private void SettingUpEnemy(EnemyInfo enemyEncountered)
@@ -54,6 +62,7 @@ public class Character : MonoBehaviour {
 
         maxHealthPoints = enemyEncountered.GetEnemyHealthPoints();
         strength = enemyEncountered.GetEnemyStrength();
+        defense = enemyEncountered.GetEnemyDefense();
         speed = enemyEncountered.GetEnemySpeed();
     }
 
@@ -69,16 +78,30 @@ public class Character : MonoBehaviour {
 
     private void InitializingCharacterStats()
     {
-        initialStrength = strength;
-        initialDefense = defense;
-        initialSpeed = speed;
+        statList.Add(strength);
+        statList.Add(defense);
+        statList.Add(speed);
+    }
+
+    private void InitializingCharacterBuffDebuffList()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            buffDuration.Add(0);
+            debuffDuration.Add(0);
+            buffMultiplier.Add(1.0f);
+            debuffMultiplier.Add(1.0f);
+        }
+
+        myCombatUIManager.SetCharacterStatDurationText(this, buffDuration, debuffDuration);
     }
 
 
     public void ThisCharacterTakingDamage(int damage)
     {
-        // TODO Manage defense here
-        thisTurnDamage = damage - defense;
+        // TODO Manage defense here, future add armor from item
+        int currentDefense = Mathf.RoundToInt(statList[DEFENSE_INDEX]);
+        thisTurnDamage = damage - currentDefense;
         if (thisTurnDamage <= 0) { thisTurnDamage = 0; }
 
         resultHealth -= thisTurnDamage;
@@ -88,7 +111,6 @@ public class Character : MonoBehaviour {
 
     public void ThisCharacterHeals(int healAmount)
     {
-        // TODO Heal Animation
         resultHealth += healAmount;
         if (resultHealth > maxHealthPoints) { resultHealth = maxHealthPoints; }
 
@@ -120,44 +142,88 @@ public class Character : MonoBehaviour {
 
     public void ThisCharacterBuff(int duration, float strMultiplier, float defMultiplier, float spdMultiplier)
     {
-        // int newStr = (int)(strength * strMultiplier);
-        // if (newStr > strength)
-        // { 
-        //      strength = newStr; 
-        //      strBuffMultiplier = strMultiplier;      [Global Var]
-        //      strBuffDurationLeft = duration;
-        // }
-        // Same goes for DEF and SPD
+        if (strMultiplier > buffMultiplier[STRENGTH_INDEX])
+        {
+            statList[STRENGTH_INDEX] *= strMultiplier; 
+            buffMultiplier[STRENGTH_INDEX] = strMultiplier;
+            buffDuration[STRENGTH_INDEX] = duration;
+        }
+
+        if (defMultiplier > buffMultiplier[DEFENSE_INDEX])
+        {
+            statList[DEFENSE_INDEX] *= defMultiplier;
+            buffMultiplier[DEFENSE_INDEX] = defMultiplier;
+            buffDuration[DEFENSE_INDEX] = duration;
+        }
+
+        if (spdMultiplier > buffMultiplier[SPEED_INDEX])
+        {
+            statList[SPEED_INDEX] *= spdMultiplier; 
+            buffMultiplier[SPEED_INDEX] = spdMultiplier;
+            buffDuration[SPEED_INDEX] = duration;
+        }
+
+        myCombatUIManager.SetCharacterStatDurationText(this, buffDuration, debuffDuration);
     }
 
     public void ThisCharacterDebuff(int duration, float strMultiplier, float defMultiplier, float spdMultiplier)
     {
-        // int newStr = (int)(strength / strMultiplier);
-        // if (newStr < strength)
-        // { 
-        //      strength = newStr; 
-        //      strDebuffMultiplier = strMultiplier;      [Global Var]
-        //      strDebuffDurationLeft = duration;
-        // }
-        // Same goes for DEF and SPD
+        if (strMultiplier > debuffMultiplier[STRENGTH_INDEX])
+        {
+            statList[STRENGTH_INDEX] /= strMultiplier; 
+            debuffMultiplier[STRENGTH_INDEX] = strMultiplier;
+            debuffDuration[STRENGTH_INDEX] = duration;
+        }
+
+        if (defMultiplier > debuffMultiplier[DEFENSE_INDEX])
+        {
+            statList[DEFENSE_INDEX] /= defMultiplier; 
+            debuffMultiplier[DEFENSE_INDEX] = defMultiplier;
+            debuffDuration[DEFENSE_INDEX] = duration;
+        }
+
+        if (spdMultiplier > debuffMultiplier[SPEED_INDEX])
+        {
+            statList[SPEED_INDEX] /= spdMultiplier;
+            debuffMultiplier[SPEED_INDEX] = spdMultiplier;
+            debuffDuration[SPEED_INDEX] = duration;
+        }
+
+        myCombatUIManager.SetCharacterStatDurationText(this, buffDuration, debuffDuration);
     }
 
     // Check every turn end?
-    // public void CheckForThisCharacterBuffDebuffDuration()
-    // {
-    //      if (strDebuffDurationLeft == 1)
-    //      {
-    //          debuff[0] = false;
-    //          strength *= strDebuffMultiplier;
-    //      }
-    //      strDebuffDurationLeft--;
-    // }
-
-    public void ThisCharacterStatReset()
+    public void CheckForThisCharacterBuffDebuffDuration()
     {
-        strength = initialStrength;
-        defense = initialDefense;
-        speed = initialSpeed;
+        for (int i = 0; i < buffDuration.Count; i++)
+        {
+            if (buffDuration[i] > 0)
+            {
+                if (buffDuration[i] == 1)
+                {
+                    statList[i] = statList[i] / buffMultiplier[i];
+                    buffMultiplier[i] = 1.0f;
+                }
+
+                buffDuration[i]--;
+            } 
+        }
+
+        for (int j = 0; j < debuffDuration.Count; j++)
+        {
+            if (debuffDuration[j] > 0)
+            {
+                if (debuffDuration[j] == 1)
+                {
+                    statList[j] = statList[j] * debuffMultiplier[j];
+                    debuffMultiplier[j] = 1.0f;
+                }
+
+                debuffDuration[j]--;
+            }
+        }
+
+        myCombatUIManager.SetCharacterStatDurationText(this, buffDuration, debuffDuration);
     }
 
 
@@ -173,17 +239,17 @@ public class Character : MonoBehaviour {
 
     public int GetThisCharStrength()
     {
-        return strength;
+        return Mathf.RoundToInt(statList[STRENGTH_INDEX]);
     }
 
     public int GetThisCharDefense()
     {
-        return defense;
+        return Mathf.RoundToInt(statList[DEFENSE_INDEX]);
     }
 
     public int GetThisCharSpeed()
     {
-        return speed;
+        return Mathf.RoundToInt(statList[SPEED_INDEX]);
     }
 
     public int GetThisTurnCharDamage()

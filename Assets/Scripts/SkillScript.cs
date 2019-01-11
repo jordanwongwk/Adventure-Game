@@ -7,18 +7,21 @@ public enum ActivationTime { beforeCombat, duringCombatOffense, duringCombatDefe
 public class SkillScript : MonoBehaviour {
 
     [SerializeField] List<SkillInfo> thisCharacterSkills = new List<SkillInfo>();
+    [SerializeField] GameObject skillEffectObject;
 
     bool charIsUsingSkill = false;
 
     Character thisCharacter;
     Character thisCharacterOpponent;
     CombatUIManager myCombatUIManager;
+    AudioSource skillAudioSource;
 
     // Use this for initialization
     void Start ()
     {
         myCombatUIManager = FindObjectOfType<CombatUIManager>();
         thisCharacter = GetComponent<Character>();
+        skillAudioSource = skillEffectObject.GetComponent<AudioSource>();
 
         // If its enemy
         if (GetComponent<EnemyScript>() != null)
@@ -162,7 +165,7 @@ public class SkillScript : MonoBehaviour {
                 break;
 
             case SkillType.Buffing:
-                ProcessStatChangeSkill(thisCharacterSkills[skillNumber], thisSkillType);
+                ProcessStatChangeSkill(thisCharacterSkills[skillNumber]);
                 break;
 
             default:
@@ -183,12 +186,12 @@ public class SkillScript : MonoBehaviour {
         switch (skillTarget)
         {
             case Target.Self:
-                thisCharacter.ThisCharacterTakingDamage((int)totalDamage);
+                thisCharacter.ThisCharacterTakingDamage(Mathf.RoundToInt(totalDamage));
                 break;
 
             case Target.Opponent:
                 thisCharacter.AttackAnimation();
-                thisCharacterOpponent.ThisCharacterTakingDamage((int)totalDamage);
+                thisCharacterOpponent.ThisCharacterTakingDamage(Mathf.RoundToInt(totalDamage));
                 myCombatUIManager.SetTurnOutcomeText(thisCharacter.name + " uses " + thisSkill.GetSkillName() + "!\nDealing " + 
                                                      thisCharacterOpponent.GetThisTurnCharDamage() + " to " + thisCharacterOpponent.name + "!");
                 break;
@@ -203,19 +206,59 @@ public class SkillScript : MonoBehaviour {
     {
         int healAmount = (thisSkill as HealSkills).GetRandomHealAmount();
 
+        GameObject skillParticleEffect = thisSkill.GetSkillParticleEffect();
+        AudioClip skillAudioClip = thisSkill.GetSkillAudioClip();
+        ActivateSkillEffects(skillParticleEffect, skillAudioClip);
+
         thisCharacter.ThisCharacterHeals(healAmount);
         myCombatUIManager.SetTurnOutcomeText(thisCharacter.name + " uses " + thisSkill.GetSkillName() + "!\nRecovering self for " + healAmount + "hp!");
     }
 
-    private void ProcessStatChangeSkill(SkillInfo thisSkill, SkillType thisSkillType)
+    private void ProcessStatChangeSkill(SkillInfo thisSkill)
     {
-        // Get Target
-        // Get Target Character
-        // Buff STR
-        // Buff DEF
-        // Buff SPD
-        // Debuff STR
-        // Debuff DEF
-        // Debuff SPD
+        Target targetChar = thisSkill.GetSkillTarget();
+        GameObject statChangeParticleEffect = thisSkill.GetSkillParticleEffect();
+        AudioClip skillAudioClip = thisSkill.GetSkillAudioClip();
+
+        int skillDuration = (thisSkill as BuffingSkills).GetBuffDebuffDuration();
+        string skillOutcomeText = (thisSkill as BuffingSkills).GetOutcomeTextForBuffDebuff();
+
+        float strBuffMultiplier = (thisSkill as BuffingSkills).GetStrengthBuffMultiplier();
+        float defBuffMultiplier = (thisSkill as BuffingSkills).GetDefenseBuffMultiplier();
+        float spdBuffMultiplier = (thisSkill as BuffingSkills).GetSpeedBuffMultiplier();
+
+        float strDebuffMultiplier = (thisSkill as BuffingSkills).GetStrengthDebuffMultiplier();
+        float defDebuffMultiplier = (thisSkill as BuffingSkills).GetDefenseDebuffMultiplier();
+        float spdDebuffMultiplier = (thisSkill as BuffingSkills).GetSpeedDebuffMultiplier();
+
+        myCombatUIManager.SetTurnOutcomeText(thisCharacter.name + " uses " + thisSkill.GetSkillName() + "!\n" + skillOutcomeText);
+
+        switch (targetChar)
+        {
+            case Target.Self:
+                ActivateSkillEffects(statChangeParticleEffect, skillAudioClip);
+                thisCharacter.ThisCharacterBuff(skillDuration, strBuffMultiplier, defBuffMultiplier, spdBuffMultiplier);
+                thisCharacter.ThisCharacterDebuff(skillDuration, strDebuffMultiplier, defDebuffMultiplier, spdDebuffMultiplier);
+                break;
+
+            case Target.Opponent:
+                thisCharacterOpponent.GetComponent<SkillScript>().ActivateSkillEffects(statChangeParticleEffect, skillAudioClip);
+                thisCharacterOpponent.ThisCharacterBuff(skillDuration, strBuffMultiplier, defBuffMultiplier, spdBuffMultiplier);
+                thisCharacterOpponent.ThisCharacterDebuff(skillDuration, strDebuffMultiplier, defDebuffMultiplier, spdDebuffMultiplier);
+                break;
+
+            default:
+                Debug.LogError("Problem assessing skill " + thisSkill.GetSkillName() + ". Buffing error.");
+                break;
+        }
+    }
+
+    private void ActivateSkillEffects(GameObject thisSkillParticleEffect, AudioClip thisSkillAudio)
+    {
+        skillAudioSource.PlayOneShot(thisSkillAudio);
+        GameObject thisSkillPE = Instantiate(thisSkillParticleEffect, skillEffectObject.transform.position, Quaternion.identity);
+
+        thisSkillPE.transform.parent = skillEffectObject.transform;
+        Destroy(thisSkillPE, 5.0f);
     }
 }

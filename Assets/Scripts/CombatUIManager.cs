@@ -24,6 +24,12 @@ public class CombatUIManager : MonoBehaviour {
     [SerializeField] GameObject endofCombatPanel;
     [SerializeField] Text combatOutcome;
 
+    [Header("Buff Debuff Duration UI")]
+    [SerializeField] List<Text> playerBuffDuration;
+    [SerializeField] List<Text> playerDebuffDuration;
+    [SerializeField] List<Text> enemyBuffDuration;
+    [SerializeField] List<Text> enemyDebuffDuration;
+
     [Header("Other Settings")]
     [SerializeField] GameObject processingTurnPanel;
     [SerializeField] Text currentPhaseText;
@@ -217,5 +223,61 @@ public class CombatUIManager : MonoBehaviour {
     public void SetCurrentPhaseText(string currentText)
     {
         currentPhaseText.text = currentText;
+    }
+
+    public void SetCharacterStatDurationText(Character character, List<int> buffDurationLeft, List<int> debuffDurationLeft)
+    {
+        if (character == playerChar)
+        {
+            for (int i = 0; i < playerBuffDuration.Count; i++)
+            {
+                if (buffDurationLeft[i] == 0)
+                {
+                    playerBuffDuration[i].text = "-";
+                }
+                else
+                {
+                    playerBuffDuration[i].text = buffDurationLeft[i].ToString();
+                }
+            }
+
+            for (int j = 0; j < playerDebuffDuration.Count; j++)
+            {
+                if (debuffDurationLeft[j] == 0)
+                {
+                    playerDebuffDuration[j].text = "-";
+                }
+                else
+                {
+                    playerDebuffDuration[j].text = debuffDurationLeft[j].ToString();
+                }
+            }
+        }
+        else if (character == enemyChar)
+        {
+            for (int k = 0; k < enemyBuffDuration.Count; k++)
+            {
+                if (buffDurationLeft[k] == 0)
+                {
+                    enemyBuffDuration[k].text = "-";
+                }
+                else
+                {
+                    enemyBuffDuration[k].text = buffDurationLeft[k].ToString();
+                }
+            }
+
+            for (int l = 0; l < enemyDebuffDuration.Count; l++)
+            {
+                if (debuffDurationLeft[l] == 0)
+                {
+                    enemyDebuffDuration[l].text = "-";
+                }
+                else
+                {
+                    enemyDebuffDuration[l].text = debuffDurationLeft[l].ToString();
+                }
+            }
+        }
     }
 }
