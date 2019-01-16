@@ -14,14 +14,14 @@ public class SkillScript : MonoBehaviour {
     Character thisCharacter;
     Character thisCharacterOpponent;
     CombatUIManager myCombatUIManager;
-    AudioSource skillAudioSource;
+    AudioSource myAudioSource;
 
     // Use this for initialization
     void Start ()
     {
         myCombatUIManager = FindObjectOfType<CombatUIManager>();
         thisCharacter = GetComponent<Character>();
-        skillAudioSource = skillEffectObject.GetComponent<AudioSource>();
+        myAudioSource = skillEffectObject.GetComponent<AudioSource>();
 
         // If its enemy
         if (GetComponent<EnemyScript>() != null)
@@ -179,7 +179,10 @@ public class SkillScript : MonoBehaviour {
     private void ProcessDamageSkill(SkillInfo thisSkill)
     {
         float totalDamage = (thisSkill as DamageSkills).GetDamageMultiplier() * thisCharacter.GetThisCharStrength();
-        Debug.Log(thisSkill.GetSkillName() + " Damage Dealt: " + totalDamage);
+
+        GameObject skillParticleEffect = null;              // Effect if needed
+        AudioClip skillAudioClip = thisSkill.GetSkillAudioClip();
+        ActivateSkillEffects(skillParticleEffect, skillAudioClip);
 
         Target skillTarget = thisSkill.GetSkillTarget();
 
@@ -255,10 +258,14 @@ public class SkillScript : MonoBehaviour {
 
     private void ActivateSkillEffects(GameObject thisSkillParticleEffect, AudioClip thisSkillAudio)
     {
-        skillAudioSource.PlayOneShot(thisSkillAudio);
-        GameObject thisSkillPE = Instantiate(thisSkillParticleEffect, skillEffectObject.transform.position, Quaternion.identity);
+        myAudioSource.PlayOneShot(thisSkillAudio);
 
-        thisSkillPE.transform.parent = skillEffectObject.transform;
-        Destroy(thisSkillPE, 5.0f);
+        if (thisSkillParticleEffect != null)
+        {
+            GameObject thisSkillPE = Instantiate(thisSkillParticleEffect, skillEffectObject.transform.position, Quaternion.identity);
+
+            thisSkillPE.transform.parent = skillEffectObject.transform;
+            Destroy(thisSkillPE, 5.0f);
+        }
     }
 }

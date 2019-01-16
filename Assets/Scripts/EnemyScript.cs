@@ -6,12 +6,15 @@ using UnityEngine.UI;
 public class EnemyScript : MonoBehaviour
 {
     [Header("Enemy Info")]
+    [SerializeField] EnemyInfo[] enemyLists;
+
     [SerializeField] EnemyInfo enemyEncountered;
 
     CombatCommand chosenEnemyCommand;
     Character myCharacter;
     Character myOpponent;
     SkillScript mySkillScript;
+    PlayerPrefsManager myPlayerPrefs;
 
     // Use Awake as CombatManagers need to take in character in Start
     void Awake ()
@@ -19,6 +22,19 @@ public class EnemyScript : MonoBehaviour
         myCharacter = GetComponent<Character>();
         myOpponent = FindObjectOfType<PlayerScript>().GetComponent<Character>();
         mySkillScript = GetComponent<SkillScript>();
+        myPlayerPrefs = FindObjectOfType<PlayerPrefsManager>();
+
+        // TODO need ma?
+        /*if (myPlayerPrefs != null)
+        {
+            enemyEncountered = enemyLists[myPlayerPrefs.GetMonsterToBattle()];
+        }
+        else
+        {
+            enemyEncountered = enemyLists[0];
+        }*/
+
+        enemyEncountered = enemyLists[myPlayerPrefs.GetMonsterToBattle()];
 
         mySkillScript.SetThisCharacterOpponent(myOpponent);
 

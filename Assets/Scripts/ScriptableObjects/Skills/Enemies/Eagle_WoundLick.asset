@@ -19,6 +19,6 @@ MonoBehaviour:
     type: 2}
   skillAudioClip: {fileID: 8300000, guid: dbc593db0ce012a46aa7c5dd62b9809e, type: 3}
   minActivateRNG: 0
-  maxActivateRNG: 50
+  maxActivateRNG: 30
   healAmountMin: 3
   healAmountMax: 6

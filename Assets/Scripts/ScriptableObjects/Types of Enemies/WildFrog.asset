@@ -16,7 +16,12 @@ MonoBehaviour:
   enemyAnimatorController: {fileID: 9100000, guid: df0b692b84aab8942b187af3bcd338c8,
     type: 2}
   level: 6
-  healthPoints: 50
-  strength: 3
-  speed: 3
-  thisEnemySpecialSkill: []
+  healthPoints: 60
+  strength: 6
+  defense: 2
+  speed: 6
+  thisEnemySpecialSkills:
+  - {fileID: 11400000, guid: 88e39a06e4b53a449bc8dc8dc5902949, type: 2}
+  - {fileID: 11400000, guid: c90548e08bef9f743acbd7461632fa89, type: 2}
+  - {fileID: 11400000, guid: 1e625e68cf5c3654d91c9bd59fac2865, type: 2}
+  - {fileID: 11400000, guid: 280a6587f0288ec429f506794bcb81b7, type: 2}

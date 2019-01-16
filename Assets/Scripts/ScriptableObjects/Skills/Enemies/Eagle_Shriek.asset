@@ -19,7 +19,7 @@ MonoBehaviour:
     type: 2}
   skillAudioClip: {fileID: 8300000, guid: 0ac94c4c8069bf8469bf835b44e23c4c, type: 3}
   minActivateRNG: 30
-  maxActivateRNG: 80
+  maxActivateRNG: 75
   duration: 1
   strengthBuffMultiplier: 1
   defenseBuffMultiplier: 1

@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b08aec53b2b9f4d48ae26fcc00142609, type: 3}
+  m_Name: Intimidating Guard
+  m_EditorClassIdentifier: 
+  skillName: Intimidating Guard
+  skillActivationTime: 1
+  commandThatTriggers: 3
+  skillTarget: 1
+  skillParticleEffect: {fileID: 1921271499594202, guid: 485ef68f02478094f90dff2f3fcf7191,
+    type: 2}
+  skillAudioClip: {fileID: 8300000, guid: 0ac94c4c8069bf8469bf835b44e23c4c, type: 3}
+  minActivateRNG: 0
+  maxActivateRNG: 60
+  duration: 1
+  strengthBuffMultiplier: 1
+  defenseBuffMultiplier: 1
+  speedBuffMultiplier: 1
+  strengthDebuffMultiplier: 1.5
+  defenseDebuffMultiplier: 1
+  speedDebuffMultiplier: 1
+  outcomeTextForBuffDebuff: Decreasing the enemy's attack power!

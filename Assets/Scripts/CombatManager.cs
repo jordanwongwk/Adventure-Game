@@ -18,6 +18,7 @@ public class CombatManager : MonoBehaviour {
     Character enemyChar;
     SkillScript playerSkillScript;
     SkillScript enemySkillScript;
+    BattleBGMScript myBattleBGMScript;
     CombatUIManager myCombatUIManager;
 
     CombatCommand playerCommand;
@@ -38,7 +39,9 @@ public class CombatManager : MonoBehaviour {
         enemySkillScript = enemyObjectScript.GetEnemySkillScript();
 
         myCombatUIManager = FindObjectOfType<CombatUIManager>();
+        myBattleBGMScript = FindObjectOfType<BattleBGMScript>();
 
+        myBattleBGMScript.BeginBattleBGM();
         StartCoroutine(StartCombatProcedure());
     }
 
@@ -217,7 +220,7 @@ public class CombatManager : MonoBehaviour {
                     }
                     else if (enemyCommand == CombatCommand.guard)
                     {
-                        myCombatUIManager.DisplayDuringCombatText(turnUnit, enemyCommand, playerCommand);
+                        EnemyIsGuarding();
                     }
                 }
                 break;
@@ -256,7 +259,8 @@ public class CombatManager : MonoBehaviour {
                     }
                     else
                     {
-                        myCombatUIManager.DisplayDuringCombatText(turnUnit, enemyCommand, playerCommand);
+                        //myCombatUIManager.DisplayDuringCombatText(turnUnit, enemyCommand, playerCommand);
+                        EnemyIsGuarding();
                     }
                 }
                 break;
@@ -264,7 +268,8 @@ public class CombatManager : MonoBehaviour {
             case CombatCommand.guard:
                 if (isPlayerTurn)
                 {
-                    myCombatUIManager.DisplayDuringCombatText(turnUnit, playerCommand, enemyCommand);
+                    //myCombatUIManager.DisplayDuringCombatText(turnUnit, playerCommand, enemyCommand);
+                    PlayerIsGuarding();
                 }
                 else
                 {
@@ -282,7 +287,8 @@ public class CombatManager : MonoBehaviour {
                     else if (enemyCommand == CombatCommand.guard)
                     {
                         // Both guarding
-                        myCombatUIManager.DisplayDuringCombatText(turnUnit, enemyCommand, playerCommand);
+                        // myCombatUIManager.DisplayDuringCombatText(turnUnit, enemyCommand, playerCommand);
+                        EnemyIsGuarding();
                     }
                 }
                 
@@ -298,6 +304,7 @@ public class CombatManager : MonoBehaviour {
     {
         attackingChar.AttackAnimation();
         yield return new WaitForSeconds(0.3f);      //TODO find length
+        attackingChar.PlayAttackSFX();
         targetChar.ThisCharacterTakingDamage(damage);
         myCombatUIManager.DisplayDuringCombatText(attackingChar.gameObject, attackingCommand, targetCommand);
     }
@@ -332,6 +339,28 @@ public class CombatManager : MonoBehaviour {
         enemySkillScript.SetThisCharacterUsingSkill(false);
     }
 
+    private void PlayerIsGuarding()
+    {
+        playerObjectScript.PlayerAttemptToUseSkill(ActivationTime.duringCombatOffense);
+
+        bool playerUseSkill = playerSkillScript.GetIsThisCharacterUsingSkill();
+
+        if (!playerUseSkill) { myCombatUIManager.DisplayDuringCombatText(playerChar.gameObject, playerCommand, enemyCommand); }
+
+        playerSkillScript.SetThisCharacterUsingSkill(false);
+    }
+
+    private void EnemyIsGuarding()
+    {
+        enemyObjectScript.EnemyAttemptToUseSkill(ActivationTime.duringCombatOffense);
+
+        bool enemyUseSkill = enemySkillScript.GetIsThisCharacterUsingSkill();
+
+        if (!enemyUseSkill) { myCombatUIManager.DisplayDuringCombatText(enemyChar.gameObject, enemyCommand, playerCommand); }
+
+        enemySkillScript.SetThisCharacterUsingSkill(false);
+    }
+
 
     private void EndOfCombatProcedure()
     {
@@ -348,6 +377,16 @@ public class CombatManager : MonoBehaviour {
     public void EndOfCombat(GameObject defeatedCharacter)
     {
         combatEnded = true;
+
+        if (defeatedCharacter == enemyChar.gameObject)
+        {
+            myBattleBGMScript.BeginVictoryBGM();
+        }
+        else
+        {
+            myBattleBGMScript.BeginLosingBGM();
+        }
+
         myCombatUIManager.EndOfCombatResult(defeatedCharacter);
     }
 

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4368e9276e3e2044aebfbdeb646a25e, type: 3}
+  m_Name: Frog_Leap Strike
+  m_EditorClassIdentifier: 
+  skillName: Leap Strike
+  skillActivationTime: 1
+  commandThatTriggers: 1
+  skillTarget: 1
+  skillParticleEffect: {fileID: 0}
+  skillAudioClip: {fileID: 8300000, guid: 87e50d329c3bea34fac8eb7b254cedc6, type: 3}
+  minActivateRNG: 0
+  maxActivateRNG: 50
+  damageMultiplier: 1.3
+  damageToCaster: 0

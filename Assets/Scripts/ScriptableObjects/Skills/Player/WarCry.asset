@@ -18,8 +18,8 @@ MonoBehaviour:
   skillParticleEffect: {fileID: 1657662291490068, guid: 92ffb49c9df321d4ba52ead9aaf1a955,
     type: 2}
   skillAudioClip: {fileID: 8300000, guid: e22f8a22da6bbe842a412a3ab7e97098, type: 3}
-  minActivateRNG: 31
-  maxActivateRNG: 70
+  minActivateRNG: 51
+  maxActivateRNG: 75
   duration: 3
   strengthBuffMultiplier: 1.25
   defenseBuffMultiplier: 1.5

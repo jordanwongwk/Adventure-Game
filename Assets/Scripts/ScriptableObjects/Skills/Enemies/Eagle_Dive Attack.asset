@@ -16,7 +16,7 @@ MonoBehaviour:
   commandThatTriggers: 2
   skillTarget: 1
   skillParticleEffect: {fileID: 0}
-  skillAudioClip: {fileID: 0}
+  skillAudioClip: {fileID: 8300000, guid: dd2a7c81671ea234192b9152fab439c6, type: 3}
   minActivateRNG: 0
   maxActivateRNG: 75
   damageMultiplier: 2.5

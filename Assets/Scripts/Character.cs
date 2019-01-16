@@ -17,6 +17,9 @@ public class Character : MonoBehaviour {
     [SerializeField] Text nameText;
     [SerializeField] Image healthForeground;
 
+    [Header("Character SFX")]
+    [SerializeField] AudioClip attackSFX;
+
     int thisTurnDamage = 0;
     int currentHealth;
     int resultHealth;
@@ -27,6 +30,7 @@ public class Character : MonoBehaviour {
     List<float> buffMultiplier = new List<float>();
     List<float> debuffMultiplier = new List<float>();
 
+    AudioSource myAudioSource;
     CombatManager myCombatManager;
     CombatUIManager myCombatUIManager;
     Animator myAnimatorController;
@@ -39,6 +43,7 @@ public class Character : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
+        myAudioSource = GetComponentInChildren<AudioSource>();
         myCombatManager = FindObjectOfType<CombatManager>();
         myCombatUIManager = FindObjectOfType<CombatUIManager>();
         myAnimatorController = GetComponent<Animator>();
@@ -232,11 +237,18 @@ public class Character : MonoBehaviour {
         myAnimatorController.SetTrigger("Attack");
     }
 
+    public void PlayAttackSFX()
+    {
+        myAudioSource.PlayOneShot(attackSFX);
+    }
+
     public void GuardPowerAttackAnimation()
     {
         myAnimatorController.SetTrigger("Guard");
     }
 
+
+    // Getter
     public int GetThisCharStrength()
     {
         return Mathf.RoundToInt(statList[STRENGTH_INDEX]);
