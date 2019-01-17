@@ -80,7 +80,7 @@ public class SkillScript : MonoBehaviour {
     }
 
 
-    public void AttemptToUseSkill(ActivationTime currentTime, CombatCommand unitCommand)
+    public void AttemptToUseSkill(ActivationTime currentTime, CombatCommand unitCommand, CombatCommand opponentCommand)
     {
         float randomValue = Random.Range(0f, 100f);
 
@@ -120,8 +120,8 @@ public class SkillScript : MonoBehaviour {
                     if (thisCharacterSkills[i].GetMinActivationRNG() < randomValue && thisCharacterSkills[i].GetMaxActivationRNG() >= randomValue)
                     {
                         if (thisCharacterSkills[i].GetSkillActivationTime() != currentTime) { continue; }
-                        // Like if enemy attack and you guard, still can counter. If enemy guard, you counter, thats a bit odd
                         if (thisCharacterSkills[i].GetCommandThatTriggersSkill() != unitCommand) { continue; }
+                        if (thisCharacterSkills[i].GetOpponentCommandThatTriggers() != opponentCommand) { continue; }
 
                         ProcessThisCharacterSkillActivation(currentTime, i);
                         break;

@@ -24,7 +24,7 @@ public class EnemyScript : MonoBehaviour
         mySkillScript = GetComponent<SkillScript>();
         myPlayerPrefs = FindObjectOfType<PlayerPrefsManager>();
 
-        // TODO need ma?
+        // TODO Only use for testing
         /*if (myPlayerPrefs != null)
         {
             enemyEncountered = enemyLists[myPlayerPrefs.GetMonsterToBattle()];
@@ -57,13 +57,6 @@ public class EnemyScript : MonoBehaviour
         {
             chosenEnemyCommand = CombatCommand.guard;
         }
-    }
-
-
-    // Public Functions
-    public void EnemyAttemptToUseSkill(ActivationTime currentTime)
-    {
-        mySkillScript.AttemptToUseSkill(currentTime, chosenEnemyCommand);
     }
 
 

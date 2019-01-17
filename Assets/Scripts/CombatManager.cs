@@ -7,7 +7,8 @@ public enum CombatCommand
 {
     attack = 1,
     powerAttack = 2,
-    guard = 3
+    guard = 3,
+    any = 4 
 }
 
 public class CombatManager : MonoBehaviour {
@@ -25,6 +26,9 @@ public class CombatManager : MonoBehaviour {
     CombatCommand enemyCommand;
 
     bool combatEnded = false;
+    bool defensiveSkillActivated = false;
+
+    const float ATTACK_ANIMATION_DAMAGE_DELAY = 0.3f;
 
 	// Initialization and Start of Combat
 	void Start ()
@@ -66,8 +70,12 @@ public class CombatManager : MonoBehaviour {
 
         myCombatUIManager.PreCombatUIProcedure();
 
-        // Activate all Pre-Combat abilities 
-        PreCombatEndCombatSkillActivation(playerChar, 0, ActivationTime.beforeCombat);
+        // Activate all Pre-Combat abilities (Faster unit activates first)
+        int playerSpeed = playerChar.GetThisCharSpeed();
+        int enemySpeed = enemyChar.GetThisCharSpeed();
+
+        if (playerSpeed >= enemySpeed) { PreCombatEndCombatSkillActivation(playerChar, 0, ActivationTime.beforeCombat); }
+        else { PreCombatEndCombatSkillActivation(enemyChar, 0, ActivationTime.beforeCombat); }        
     }
 
     // Use Dynamic Programming to process skill count
@@ -86,7 +94,7 @@ public class CombatManager : MonoBehaviour {
 
         if (currentChar == playerChar)
         {
-            playerObjectScript.PlayerAttemptToUseSkill(currentTime);
+            playerSkillScript.AttemptToUseSkill(currentTime, playerCommand, enemyCommand);
             skillActivated = playerSkillScript.GetIsThisCharacterUsingSkill();
 
             if (skillActivated) { StartCoroutine(PreCombatWaitForKeyPress(playerSkillScript, processCount, enemyChar, currentTime)); }
@@ -94,7 +102,7 @@ public class CombatManager : MonoBehaviour {
         }
         else if (currentChar == enemyChar)
         {
-            enemyObjectScript.EnemyAttemptToUseSkill(currentTime);
+            enemySkillScript.AttemptToUseSkill(currentTime, enemyCommand, playerCommand);
             skillActivated = enemySkillScript.GetIsThisCharacterUsingSkill();
 
             if (skillActivated) { StartCoroutine(PreCombatWaitForKeyPress(enemySkillScript, processCount, playerChar, currentTime)); }
@@ -135,8 +143,6 @@ public class CombatManager : MonoBehaviour {
     // Begin the CORE function of the combat
     IEnumerator BeginCombatProcedure()
     {
-        //yield return WaitForKeyPress();
-
         myCombatUIManager.CommandTextBoxDisplay(false);
 
         yield return new WaitForSeconds(0.5f);      // Delay for window to disappear OR animation to finish
@@ -144,15 +150,33 @@ public class CombatManager : MonoBehaviour {
         int playerSpeed = playerChar.GetThisCharSpeed();
         int enemySpeed = enemyChar.GetThisCharSpeed();
 
+        // Action turn 1: Fastest unit turn AND slowest unit retaliate
         FastestUnitCombatProcedure(playerSpeed, enemySpeed);
-        // TODO activate defense skill on slowest speed unit
 
         yield return WaitForKeyPress();
 
+        StartCoroutine(SlowestUnitUseDefensiveSkill(playerSpeed, enemySpeed));
+
+        if (defensiveSkillActivated)
+        {
+            defensiveSkillActivated = false;
+            yield return WaitForKeyPress();
+        }
+        // End action turn 1
+
+        // Action turn 2: Slowest unit turn AND fastest unit retaliate
         SlowestUnitCombatProcedure(playerSpeed, enemySpeed);
-        // TODO activate defense skill on fastest speed unit
 
         yield return WaitForKeyPress();
+
+        StartCoroutine(FastestUnitUseDefensiveSkill(playerSpeed, enemySpeed));
+
+        if (defensiveSkillActivated)
+        {
+            defensiveSkillActivated = false;
+            yield return WaitForKeyPress();
+        }
+        // End action turn 2
 
         EndOfCombatProcedure();
     }
@@ -171,6 +195,30 @@ public class CombatManager : MonoBehaviour {
         }
     }
 
+    IEnumerator SlowestUnitUseDefensiveSkill(int playerSpeed, int enemySpeed)
+    {
+        if (playerSpeed >= enemySpeed)
+        {
+            enemySkillScript.AttemptToUseSkill(ActivationTime.duringCombatDefense, enemyCommand, playerCommand);
+            defensiveSkillActivated = enemySkillScript.GetIsThisCharacterUsingSkill();
+
+            yield return WaitForKeyPress();
+
+            // Occurs concurrent with the WaitForKeyPress at Combat
+            enemySkillScript.SetThisCharacterUsingSkill(false);
+        }
+        else
+        {
+            playerSkillScript.AttemptToUseSkill(ActivationTime.duringCombatDefense, playerCommand, enemyCommand);
+            defensiveSkillActivated = playerSkillScript.GetIsThisCharacterUsingSkill();
+
+            yield return WaitForKeyPress();
+
+            // Occurs concurrent with the WaitForKeyPress at Combat
+            playerSkillScript.SetThisCharacterUsingSkill(false);
+        }
+    }
+
     public void SlowestUnitCombatProcedure(int playerSpeed, int enemySpeed)
     {
         if (playerSpeed < enemySpeed)
@@ -182,6 +230,28 @@ public class CombatManager : MonoBehaviour {
         {
             ProcessingDuringCombatPhase(enemyChar.gameObject);
             myCombatUIManager.SetCurrentPhaseText("Enemy's Turn");
+        }
+    }
+
+    IEnumerator FastestUnitUseDefensiveSkill(int playerSpeed, int enemySpeed)
+    {
+        if (playerSpeed < enemySpeed)
+        {
+            enemySkillScript.AttemptToUseSkill(ActivationTime.duringCombatDefense, enemyCommand, playerCommand);
+            defensiveSkillActivated = enemySkillScript.GetIsThisCharacterUsingSkill();
+
+            yield return WaitForKeyPress();
+
+            enemySkillScript.SetThisCharacterUsingSkill(false);
+        }
+        else
+        {
+            playerSkillScript.AttemptToUseSkill(ActivationTime.duringCombatDefense, playerCommand, enemyCommand);
+            defensiveSkillActivated = playerSkillScript.GetIsThisCharacterUsingSkill();
+
+            yield return WaitForKeyPress();
+
+            playerSkillScript.SetThisCharacterUsingSkill(false);
         }
     }
 
@@ -259,7 +329,6 @@ public class CombatManager : MonoBehaviour {
                     }
                     else
                     {
-                        //myCombatUIManager.DisplayDuringCombatText(turnUnit, enemyCommand, playerCommand);
                         EnemyIsGuarding();
                     }
                 }
@@ -268,7 +337,6 @@ public class CombatManager : MonoBehaviour {
             case CombatCommand.guard:
                 if (isPlayerTurn)
                 {
-                    //myCombatUIManager.DisplayDuringCombatText(turnUnit, playerCommand, enemyCommand);
                     PlayerIsGuarding();
                 }
                 else
@@ -287,7 +355,6 @@ public class CombatManager : MonoBehaviour {
                     else if (enemyCommand == CombatCommand.guard)
                     {
                         // Both guarding
-                        // myCombatUIManager.DisplayDuringCombatText(turnUnit, enemyCommand, playerCommand);
                         EnemyIsGuarding();
                     }
                 }
@@ -303,7 +370,7 @@ public class CombatManager : MonoBehaviour {
     IEnumerator BattleOutcome(Character attackingChar, CombatCommand attackingCommand, Character targetChar, CombatCommand targetCommand, int damage)
     {
         attackingChar.AttackAnimation();
-        yield return new WaitForSeconds(0.3f);      //TODO find length
+        yield return new WaitForSeconds(ATTACK_ANIMATION_DAMAGE_DELAY);      
         attackingChar.PlayAttackSFX();
         targetChar.ThisCharacterTakingDamage(damage);
         myCombatUIManager.DisplayDuringCombatText(attackingChar.gameObject, attackingCommand, targetCommand);
@@ -311,14 +378,12 @@ public class CombatManager : MonoBehaviour {
 
     private void PlayerAttackingEnemy(Character playerChar, Character enemyChar, int damage)
     {
-        playerObjectScript.PlayerAttemptToUseSkill(ActivationTime.duringCombatOffense);
+        playerSkillScript.AttemptToUseSkill(ActivationTime.duringCombatOffense, playerCommand, enemyCommand);
 
         bool playerUseSkill = playerSkillScript.GetIsThisCharacterUsingSkill();
 
         // Normal attack if no skill is used
         if (!playerUseSkill) { StartCoroutine(BattleOutcome(playerChar, playerCommand, enemyChar, enemyCommand, damage)); }
-
-        // TODO add enemy defense skill
 
         // Reset the boolean back to false
         playerSkillScript.SetThisCharacterUsingSkill(false);
@@ -326,23 +391,21 @@ public class CombatManager : MonoBehaviour {
 
     private void EnemyAttackingPlayer(Character playerChar, Character enemyChar, int damage)
     {
-        enemyObjectScript.EnemyAttemptToUseSkill(ActivationTime.duringCombatOffense);
+        enemySkillScript.AttemptToUseSkill(ActivationTime.duringCombatOffense, enemyCommand, playerCommand);
 
         bool enemyUseSkill = enemySkillScript.GetIsThisCharacterUsingSkill();
 
         // Normal attack if no skill is used
         if (!enemyUseSkill) { StartCoroutine(BattleOutcome(enemyChar, enemyCommand, playerChar, playerCommand, damage)); }
 
-        // TODO add player defense skill
-
         // Reset the boolean back to false
         enemySkillScript.SetThisCharacterUsingSkill(false);
     }
 
+
     private void PlayerIsGuarding()
     {
-        playerObjectScript.PlayerAttemptToUseSkill(ActivationTime.duringCombatOffense);
-
+        playerSkillScript.AttemptToUseSkill(ActivationTime.duringCombatOffense, playerCommand, enemyCommand);
         bool playerUseSkill = playerSkillScript.GetIsThisCharacterUsingSkill();
 
         if (!playerUseSkill) { myCombatUIManager.DisplayDuringCombatText(playerChar.gameObject, playerCommand, enemyCommand); }
@@ -352,8 +415,7 @@ public class CombatManager : MonoBehaviour {
 
     private void EnemyIsGuarding()
     {
-        enemyObjectScript.EnemyAttemptToUseSkill(ActivationTime.duringCombatOffense);
-
+        enemySkillScript.AttemptToUseSkill(ActivationTime.duringCombatOffense, enemyCommand, playerCommand);
         bool enemyUseSkill = enemySkillScript.GetIsThisCharacterUsingSkill();
 
         if (!enemyUseSkill) { myCombatUIManager.DisplayDuringCombatText(enemyChar.gameObject, enemyCommand, playerCommand); }
@@ -364,8 +426,13 @@ public class CombatManager : MonoBehaviour {
 
     private void EndOfCombatProcedure()
     {
-        // Activate End of Combat Skills
-        PreCombatEndCombatSkillActivation(playerChar, 0, ActivationTime.afterCombat);
+        // Activate End of Combat Skills (Faster unit activates first)
+        int playerSpeed = playerChar.GetThisCharSpeed();
+        int enemySpeed = enemyChar.GetThisCharSpeed();
+
+        if (playerSpeed >= enemySpeed) { PreCombatEndCombatSkillActivation(playerChar, 0, ActivationTime.afterCombat); }
+        else { PreCombatEndCombatSkillActivation(enemyChar, 0, ActivationTime.afterCombat); }
+
         myCombatUIManager.EndOfCombatTurnUI();
     }
 

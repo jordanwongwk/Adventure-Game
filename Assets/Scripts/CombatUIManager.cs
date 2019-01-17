@@ -99,7 +99,7 @@ public class CombatUIManager : MonoBehaviour {
     // END : Pre-Combat
 
 
-    // TODO consider changing tag -> checking playerChar and enemyChar GO
+
     // START : During Combat 
     // Displaying combat outcome based on turn
     public void DisplayDuringCombatText(GameObject unitTurn, CombatCommand turnUnitCommand, CombatCommand targetCommand)
@@ -108,13 +108,13 @@ public class CombatUIManager : MonoBehaviour {
         string thisUnitTurnName = "Dummy";
         string targetName = "Dummy2";
 
-        if (unitTurn.tag == "Player")
+        if (unitTurn == playerChar.gameObject)
         {
             thisUnitTurnName = "Player";
             targetName = "Enemy";
             targetSufferedDamage = enemyChar.GetThisTurnCharDamage();
         }
-        else if (unitTurn.tag == "Enemy")
+        else if (unitTurn == enemyChar.gameObject)
         {
             thisUnitTurnName = "Enemy";
             targetName = "Player";
@@ -208,7 +208,6 @@ public class CombatUIManager : MonoBehaviour {
     {
         endofCombatPanel.SetActive(true);
 
-        // TODO Please address the issue of draw. Player should win the moment the last attack lands!
         if (defeatedCharacter == playerChar.gameObject)
         {
             combatOutcome.text = "Player has been defeated!\nYou lost!";

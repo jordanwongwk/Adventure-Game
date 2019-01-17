@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b08aec53b2b9f4d48ae26fcc00142609, type: 3}
+  m_Name: WarCry
+  m_EditorClassIdentifier: 
+  skillName: War Cry
+  skillActivationTime: 0
+  commandThatTriggers: 0
+  skillTarget: 0
+  opponentCommandThatTriggers: 0
+  skillParticleEffect: {fileID: 1657662291490068, guid: 92ffb49c9df321d4ba52ead9aaf1a955,
+    type: 2}
+  skillAudioClip: {fileID: 8300000, guid: e22f8a22da6bbe842a412a3ab7e97098, type: 3}
+  minActivateRNG: 50
+  maxActivateRNG: 75
+  duration: 2
+  strengthBuffMultiplier: 1.5
+  defenseBuffMultiplier: 1.5
+  speedBuffMultiplier: 1
+  strengthDebuffMultiplier: 1
+  defenseDebuffMultiplier: 1
+  speedDebuffMultiplier: 1
+  outcomeTextForBuffDebuff: Increasing player's strength and defense!

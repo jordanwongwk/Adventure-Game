@@ -404,6 +404,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyLists:
+  - {fileID: 11400000, guid: ae7d8e65a5412c847b38284803e199c9, type: 2}
   - {fileID: 11400000, guid: bf72ad1ac87b336488f6477199d0b032, type: 2}
   - {fileID: 11400000, guid: bf6e1b00de9dd4447a8f2352dd0c064e, type: 2}
   enemyEncountered: {fileID: 0}

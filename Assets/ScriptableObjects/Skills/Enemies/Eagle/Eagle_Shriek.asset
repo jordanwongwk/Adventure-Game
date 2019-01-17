@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b08aec53b2b9f4d48ae26fcc00142609, type: 3}
+  m_Name: Eagle_Shriek
+  m_EditorClassIdentifier: 
+  skillName: Shriek
+  skillActivationTime: 0
+  commandThatTriggers: 0
+  skillTarget: 1
+  opponentCommandThatTriggers: 0
+  skillParticleEffect: {fileID: 1371404076290948, guid: 222b2534dd1f8b54f9d07b601b5e0dd7,
+    type: 2}
+  skillAudioClip: {fileID: 8300000, guid: 0ac94c4c8069bf8469bf835b44e23c4c, type: 3}
+  minActivateRNG: 0
+  maxActivateRNG: 30
+  duration: 1
+  strengthBuffMultiplier: 1
+  defenseBuffMultiplier: 1
+  speedBuffMultiplier: 1
+  strengthDebuffMultiplier: 1.5
+  defenseDebuffMultiplier: 1
+  speedDebuffMultiplier: 1
+  outcomeTextForBuffDebuff: Decreasing opponent's strength!

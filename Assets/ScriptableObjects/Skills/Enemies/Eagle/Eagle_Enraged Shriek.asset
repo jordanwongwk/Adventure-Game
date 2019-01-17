@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b08aec53b2b9f4d48ae26fcc00142609, type: 3}
+  m_Name: Eagle_Enraged Shriek
+  m_EditorClassIdentifier: 
+  skillName: Enraged Shriek
+  skillActivationTime: 2
+  commandThatTriggers: 2
+  skillTarget: 1
+  opponentCommandThatTriggers: 3
+  skillParticleEffect: {fileID: 1919267851141646, guid: d4900831fc4c4064e9684a083f39cc04,
+    type: 2}
+  skillAudioClip: {fileID: 8300000, guid: e22f8a22da6bbe842a412a3ab7e97098, type: 3}
+  minActivateRNG: 0
+  maxActivateRNG: 80
+  duration: 2
+  strengthBuffMultiplier: 1
+  defenseBuffMultiplier: 1
+  speedBuffMultiplier: 1
+  strengthDebuffMultiplier: 1
+  defenseDebuffMultiplier: 1.5
+  speedDebuffMultiplier: 1
+  outcomeTextForBuffDebuff: Cowering in fear, your defense is reduced!

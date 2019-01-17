@@ -384,6 +384,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f0bf134cb7a8bff44bb65397be84900c, type: 2}
   - {fileID: 11400000, guid: 4dbfe363ff3eb664ba7d260ee9c5fb00, type: 2}
   - {fileID: 11400000, guid: d4c7ceef5cb71cd4ebb372ecc60ea239, type: 2}
+  - {fileID: 11400000, guid: bfdf127bee36d4244a6d873e65b1d001, type: 2}
   skillEffectObject: {fileID: 1168336346181372}
 --- !u!114 &114775669089454400
 MonoBehaviour:
