@@ -7,6 +7,8 @@ public class UITutorialPanelScript : MonoBehaviour {
     [SerializeField] GameObject backButton;
     [SerializeField] List<GameObject> tutorialPanelList;
 
+    List<GameObject> activePanels = new List<GameObject>();
+
 	// Use this for initialization
 	void Start ()
     {
@@ -24,14 +26,19 @@ public class UITutorialPanelScript : MonoBehaviour {
 
     public void OnClickShowTutorial(int panelNumber)
     {
-        DisableAllPanels();
         backButton.SetActive(true);
         tutorialPanelList[panelNumber].SetActive(true);
+        activePanels.Add(tutorialPanelList[panelNumber]);
     }
 
     public void OnClickReturnToTutorialMainMenu()
     {
-        DisableAllPanels();
-        backButton.SetActive(false);
+        activePanels[activePanels.Count - 1].SetActive(false);
+        activePanels.RemoveAt(activePanels.Count - 1);
+
+        if (activePanels.Count == 0)
+        {
+            backButton.SetActive(false);
+        }
     }
 }
